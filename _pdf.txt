@@ -1,0 +1,812 @@
+===== Materi_Data_Sample_BPJS_Kesehatan_Healthkaton2026.pdf 31
+--- hal 1
+DATA SAMPLE BPJS KESEHATAN
+Data Engineer
+Jakarta, 20 Oktober 2026
+Kedeputian Bidang Manajemen Data dan Informasi
+Healthkathon 2026
+Fatah Abdella Sutara,M.TI.
+--- hal 2
+2
+2
+TATA NILAI BPJS KESEHATAN
+
+--- hal 3
+3
+Emergency
+Health Facilities 
+Information System
+FASKES
+TINGKAT 
+PERTAMA APOTEK Online Pharmacy
+Rujukan 
+ke RS
+- Rujukan dari FKTP
+- Rujuk Balik ke FKTP
+Pengiriman resep
+Calon Fasilitas 
+Kesehatan Kerja Sama
+JKN Integrated Care
+Cloud System & Data Platform
+PESERTA
+H F I S 
+KANTOR 
+CABANG
+Fasilitas kesehatan, Jumlah Tempat 
+Tidur, Waktu Operasional, Jumlah 
+tenaga kesehatan 
+Perintah 
+Pembayaran
+BANK
+Kunjungan 
+ke Faskes
+FASKES 
+TINGKAT 
+LANJUTAN
+Online Virtual Claim (VClaim)
+Online Primary Care (PCare)
+Submit Klaim
+Pengajuan 
+kerja sama
+Perbankan
+Fasilitas 
+Kesehatan
+Collaboration & 
+Partnership Kementerian /Lembaga
+Penduduk 
+Indonesia
+Perusahaan /
+Badan Usaha
+BPJS KESEHATAN
+DIGITAL SERVICES
+Ekosistem Layanan Kesehatan JKN 
+Total Data Dikelola
+>650 Miliar1.750
+Transaksi per detik
+DATA SAMPEL
+BPJS KESEHATAN
+Big Data BPJS Kesehatan
+Tele
+konsultasi
+DATA PESERTA
+ DATA FKTP
+ DATA FKRTL
+282juta
+32ribu
+Data Driven Policy
+337ribu
+32
+--- hal 4
+4
+Data Sample BPJS Kesehatan
+DATA PESERTA
+DATA FKTP
+DATA FKRTL
+✓ Berdasarkan FKTP 
+terdaftar
+✓ Basis keluarga
+✓ Kategori Layanan 
+(FKTP, FKRTL, Belum 
+Pernah Akses Layanan)
+Data Sampel 
+General [2019=2020]
+Data Sampel 
+Tuberkulosis [2022]
+Data Sampel 
+Diabetes Mellitus [2021]
+Data Sampel 
+KIA [2023]
+✓ Basis Individu
+✓ Tipe DM    (Tipe 1/Tipe 
+2)
+✓ Kategori Layanan (FKTP, 
+FKRTL, 
+✓ Belum Pernah Akses 
+Layanan)
+✓ Basis Keluarga
+✓ Tipe TB     (Paru / 
+Ekstra Paru)
+✓ Kategori Layanan (FKTP, 
+FKRTL, 
+✓ Belum Pernah Akses 
+Layanan)
+✓ Basis Individu
+✓ Subset Ibu dan Subset Anak
+✓ Sampel Ibu 
+(Persalinan/ANC/PNC
+✓ Subset Anak yang dilahirkan 
+dari Sampel Ibu
+✓ Kategori Layanan (FKTP, 
+FKRTL)
+✓ Basis Individu
+✓ Diagnosis Gangguan 
+Kesehatan Mental
+✓ Kategori Layanan 
+(FKTP, FKRTL)
+DATA 
+SAMPEL
+STRATIFIED 
+RANDOM SAMPLE
+PROSES PEMBENTUKAN 
+*) Pengambilan Sampel 
+dengan membagi data 
+populasi ke dalam 
+kelompok homogen untuk 
+diambil secara acak
+METODOLOGI 
+Data Sampel
+COVID [2025]
+✓ Sampel pelayanan Covid 
+periode 2020-2023
+✓ Basis Individu
+✓ Pernah mendapat 
+vaksin/belum mendapat 
+vaksin
+✓ Memiliki komorbid/tidak 
+memiliki komorbid
+UNIK & KONSISTEN
+ANTAR DATA SAMPEL
+Data Sampel 
+Mental Health [2024]
+*) Telah dilakukan 
+proses de-identifikasi 
+data dan data 
+privacy protection
+PembobotanDesain SamplePopulasi
+standar diagnosis (ICD-10) dan prosedur (ICD-9CM)
+• Sistemastis, Melibatkan dukungan para ahli terutama dalam bidang statistika, 
+untuk menghasilkan data sample sesuai kaidah ilmu statistika. 
+• Ukuran Data, Lebih ramah secara komputasi dibanding bekerja dengan data 
+populasi
+• Representatif, Memiliki karakteristik umum dan pola yang sangat mirip dengan 
+data populasi
+• Kecukupan Data, Memenuhi syarat untuk proses inferensi di berbagai subpopulasi 
+(misal: prov, kab/kota)
+• Lengkap, Berisi berbagai variabel penting dalam hal kepesertaan dan layanan
+• Longitudinal, Berisi data layanan sejak tahun 2015 dan memungkinkan dikaji 
+cohort-nya
+• Bersih, Telah melalui proses cleaning, anomaly bersifat minor
+PENDEKATAN KARAKTERISTIK
+--- hal 5
+5
+Data Sample BPJS Kesehatan
+REGISTRASI
+Akses dan buat 
+akun pada 
+Portal Data JKN 
+ISI FORMULIR
+• Keperluan akses
+• Jenis data sampel
+• Deskripsi singkat
+• Asal instansi
+• Tanda pengenal
+• Pakta integritas
+SIAP AKSES
+Sistem AUTO-
+APPROVE, data 
+dapat diakses 
+melalui email 
+yang terdaftar
+FEEDBACK
+Sampaikan hasil 
+analisis, dan 
+pemanfaatan) 
+(continuous 
+improvement)
+Metode Sampling General Metode Sampling Diabetes 
+Mellitus
+Metode Sampling Tuberkulosis 
+Metode Sampling Kesehatan 
+Ibu dan Anak
+Metode Sampling Kesehatan Mental
+ Metode Sampling Covid
+--- hal 6
+6
+4,4
+13,9
+24,7 31,4
+39,6 49,1
+59,717,4
+20,9
+25,0
+26,6
+29,2
+5,3
+6,4
+6,6
+7,2
+11,4
+14,7
+18,5
+6,1
+8,9
+2,7
+4,4
+13,9
+42,1
+57,6
+82,3
+102,8
+126,2
+s.d. 2019 s.d. 2020 s.d. 2021 s.d. 2022 s.d. 2023 s.d. 2024 s.d. 2025
+General Diabetes Melitus Tuberkulosis
+KIA Mental Health Covid
+Total Rilis Data
+Dataset dan Akses Data Sample BPJS Kesehatan
+SATUAN: JUTA BARIS DATA
+Buku
+REGISTRASI
+Akses dan buat 
+akun pada 
+Portal Data JKN 
+Akses portal: data.bpjs-kesehatan.go.id
+ISI FORMULIR
+• Keperluan akses
+• Jenis data sampel
+• Deskripsi singkat
+• Asal instansi
+• Tanda pengenal
+• Pakta integritas
+SIAP AKSES
+Sistem AUTO-
+APPROVE, data 
+dapat diakses 
+melalui email 
+yang terdaftar
+FEEDBACK
+Sampaikan hasil 
+analisis, dan 
+pemanfaatan) 
+(continuous 
+improvement)
+DATA PESERTA
+Berisi karakteristik peserta JKN seperti tanggal lahir, jenis kelamin, status perkawinan, 
+hubungan keluarga dan tempat tinggal peserta; 18 variabel
+DATA LAYANAN FKTP
+Berisi informasi mengenai kunjungan peserta 
+JKN untuk layanan di FKTP , seperti waktu 
+kunjungan, lokasi kunjungan, jenis poli dan 
+diagnosa; 26 variabel
+DATA LAYANAN FKTP NON KAPITASI
+Berisi informasi mengenai kunjungan peserta 
+JKN untuk tindakan layanan di FKTP , seperti 
+waktu tindakan, lokasi tindakan, jenis 
+Tindakan; 23 variabel
+DATA LAYANAN FKRTL
+Berisi informasi mengenai kunjungan peserta 
+JKN untuk layanan di FKRTL, seperti waktu 
+kunjungan, lokasi kunjungan, jenis poli dan 
+diagnosa; 55 variabel
+DATA LAYANAN FKRTL DIAGNOSIS 
+SEKUNDER
+Data diagnosis sekunder sebagai bagian dari 
+data layanan FKRTL; 4 variabel
+Struktur data sampel (5 dataset):
+Collaborative Research
+Joint Innovation
+Publication
+ Capacity Building
+Policy Formulation
+Bentuk Kolaborasi:
+--- hal 7
+7
+Dataset variabel nama penjelasan
+Peserta PSTV01 Nomor peserta Nomor identifikasi peserta yang bersifat unik dan telah dideidentifikasi untuk melindungi identitas peserta sebenarnya
+Peserta PSTV02 Nomor keluarga
+Nomor yang mengidentifikasi kepala keluarga dalam sampel dan berfungsi sebagai penanda keluarga (peserta BPJS Kesehatan dalam satu keluarga 
+memiliki nomor kepala keluarga yang sama)
+Peserta PSTV15 Bobot Faktor pengali yang menggambarkan jumlah individu di dalam populasi diwakili oleh individu di dalam sampel
+Peserta PSTV16 Tahun Sampel Tahun sampel diambil sebagai data kepesertaan
+Peserta PSTV17 Status Kepesertaan Status kepesertaan berdasarkan sistem BPJS Kesehatan per tanggal 31 Desember 2021
+Peserta PSTV18 Tahun meninggal Tahun meninggal peserta yang tercatat pada sistem BPJS Kesehatan dengan status kepesertaan meninggal
+FKTP PSTV01 Nomor peserta Nomor identifikasi peserta yang bersifat unik dan telah dideidentifikasi untuk melindungi identitas peserta sebenarnya
+FKTP PSTV02 Nomor keluarga
+Nomor yang mengidentifikasi kepala keluarga dalam sampel dan berfungsi sebagai penanda keluarga (peserta BPJS Kesehatan dalam satu keluarga 
+memiliki nomor kepala keluarga yang sama)
+FKTP PSTV15 Bobot Faktor pengali yang menggambarkan jumlah individu di dalam populasi diwakili oleh individu di dalam sampel
+FKTP FKP02 ID Kunjungan FKTP Nomor identifikasi unik untuk menandakan setiap kunjungan FKTP oleh peserta
+FKTP FKP03
+Tanggal datang kunjungan 
+FKTP Tanggal melakukan kunjungan FKTP
+FKRTL PSTV01 Nomor peserta Nomor identifikasi peserta yang bersifat unik dan telah dideidentifikasi untuk melindungi identitas peserta sebenarnya
+FKRTL PSTV02 Nomor keluarga
+Nomor yang mengidentifikasi kepala keluarga dalam sampel dan berfungsi sebagai penanda keluarga (peserta BPJS Kesehatan dalam satu keluarga 
+memiliki nomor kepala keluarga yang sama)
+FKRTL PSTV15 Bobot Faktor pengali yang menggambarkan jumlah individu di dalam populasi diwakili oleh individu di dalam sampel
+FKRTL FKP02 ID kunjungan FKTP ID Kunjungan pada data pelayanan FKTP sebagai variabel untuk menggabungkan pelayanan FKTP dan FKRTL
+FKRTL FKL02 ID Kunjungan FKRTL Nomor identifikasi unik untuk menandakan setiap kunjungan ke FKRTL oleh peserta
+FKTP Non Kapitasi PSTV01 Nomor Peserta Nomor identifikasi peserta yang bersifat unik dan telah dideidentifikasi untuk melindungi identitas peserta sebenarnya
+FKTP Non Kapitasi PSTV02 Nomor keluarga
+Nomor yang mengidentifikasi kepala keluarga dalam sampel dan berfungsi sebagai penanda keluarga (peserta BPJS Kesehatan dalam satu keluarga 
+memiliki nomor kepala keluarga yang sama)
+FKTP Non Kapitasi PSTV15 Bobot Faktor pengali yang menggambarkan jumlah individu di dalam populasi diwakili oleh individu di dalam sampel
+FKTP Non Kapitasi PNK02 ID Kunjungan Nomor identifikasi unik untuk menandakan setiap kunjungan FKTP oleh peserta
+FKTP Non Kapitasi PNK03 Tanggal kunjungan Tanggal melakukan kunjungan
+FKRTL Diagnosis 
+Sekunder FKL02 ID kunjungan Nomor identifikasi unik untuk menandakan setiap kunjungan ke FKRTL oleh peserta
+FKRTL Diagnosis 
+Sekunder FKL24
+Kode diagnosis (beragam 3-5 
+digit) Kode diagnosis menurut ICD 10 (jumlah digit tidak sama pada semua observasi dengan rentang 3-5 digit kode ICD 10)
+Hubungan antar dataset data sample
+--- hal 8
+8
+akses data sample
+Link Maksimal
+7 hari
+--- hal 9
+9
+--- hal 10
+10
+Mengenal Variabel Data Sampel ?
+10
+
+--- hal 11
+11
+File Data Kepesertaan
+11
+--- hal 12
+12
+12
+NO VARIABEL ISI VARIABEL PENJELASAN
+1 PSTV01 Nomor peserta Nomor identifikasi peserta yang bersifat unik dan telah dideidentifikasi untuk melindungi identitas peserta sebenarnya
+2 PSTV02 Nomor keluarga
+Nomor yang mengidentifikasi kepala keluarga dalam sampel dan berfungsi 
+sebagai penanda keluarga (peserta BPJS Kesehatan dalam satu keluarga memiliki 
+nomor kepala keluarga yang sama)
+3 PSTV03 Tanggal lahir peserta Tanggal lahir peserta yang tercatat pada sistem BPJS Kesehatan ketika melakukan pendaftaran
+4 PSTV04 Hubungan Keluarga Hubungan atau status peserta di dalam keluarga per tanggal 31 Desember 2021 (1: Peserta, 2: Suami, 3: Istri, 4: Anak, 5: Keluarga Tambahan)
+5 PSTV05 Jenis Kelamin Jenis kelamin peserta (1: Laki-laki, 2: Perempuan)
+6 PSTV06 Status perkawinan Status perkawinan per tanggal 31 Desember 2021 (1: Belum Kawin, 2: Kawin, 3: Cerai)
+7 PSTV07 Kelas rawat Kelas rawat peserta yang tercatat dalam sistem BPJS Kesehatan per tanggal 31 Desember 2021
+8 PSTV08 Segmentasi peserta Segmentasi peserta yang tercatat pada sistem BPJS Kesehatan per tanggal 31 Desember 2021 (1: BP , 2: PBI APBN, 3: PBI APBD, 4: PBPU, 5: PPU)
+9 PSTV09 Provinsi Tempat Tinggal Peserta Provinsi tempat tinggal peserta yang diinput dalam sistem BPJS Kesehatan per tanggal 31 Desember 2021 (sesuai kode wilayah BPS)
+--- hal 13
+13
+13
+NO VARIABEL ISI VARIABEL PENJELASAN
+10 PSTV10 Kabupaten/Kota Tempat Tinggal Peserta Kabupaten/Kota tempat tinggal peserta yang diinput dalam sistem BPJS Kesehatan per tanggal 31 Desember 2021 (sesuai kode wilayah BPS)
+11 PSTV11 Kepemilikan faskes Kepemilikan dari fasilitas kesehatan tempat peserta terdaftar per tanggal 31 Desember 2021
+12 PSTV12 Jenis faskes Jenis fasilitas kesehatan tempat peserta terdaftar per tanggal 31 Desember 2021 (1: Puskesmas, 2: Klinik Pratama, 3: Dokter Umum)
+13 PSTV13 Provinsi Fasilitas Kesehatan Peserta Terdaftar Provinsi faskes tempat peserta terdaftar per tanggal 31 Desember 2021 (sesuai kode wilayah BPS)
+14 PSTV14 Kabupaten/Kota Fasilitas Kesehatan Peserta Terdafta Kabupaten/Kota faskes tempat peserta terdaftar per tanggal 31 Desember 2021 (sesuai kode wilayah BPS)
+15 PSTV15 Bobot Faktor pengali yang menggambarkan jumlah individu di dalam populasi diwakili oleh individu di dalam sampel
+16 PSTV16 Tahun Sampel Tahun sampel diambil sebagai data kepesertaan
+17 PSTV17 Status Kepesertaan Status kepesertaan berdasarkan sistem BPJS Kesehatan per tanggal 31 Desember 2021
+18 PSTV18 Tahun meninggal Tahun meninggal peserta yang tercatat pada sistem BPJS Kesehatan dengan status kepesertaan meninggal
+--- hal 14
+14
+File Data Pelayanan FKTP
+14
+--- hal 15
+15
+15
+NO VARIABEL ISI VARIABEL PENJELASAN
+1 PSTV01 Nomor peserta Nomor identifikasi peserta yang bersifat unik dan telah dideidentifikasi untuk melindungi identitas peserta sebenarnya
+2 PSTV02 Nomor keluarga
+Nomor yang mengidentifikasi kepala keluarga dalam sampel dan berfungsi 
+sebagai penanda keluarga (peserta BPJS Kesehatan dalam satu keluarga memiliki 
+nomor kepala keluarga yang sama)
+3 PSTV15 Bobot Faktor pengali yang menggambarkan jumlah individu di dalam populasi diwakili oleh individu di dalam sampel
+4 FKP02 ID Kunjungan FKTP Nomor identifikasi unik untuk menandakan setiap kunjungan FKTP oleh peserta
+5 FKP03 Tanggal datang kunjungan FKTP Tanggal melakukan kunjungan FKTP
+6 FKP04 Tanggal pulang kunjungan FKTP Tanggal menyelesaikan kunjungan FKTP
+7 FKP05 Provinsi FKTP Provinsi tempat peserta mengakses fasilitas kesehatan (sesuai kode wilayah BPS)
+8 FKP06 Kabupaten/Kota FKTP Kabupaten/kota tempat peserta mengakses fasilitas kesehatan (sesuai kode wilayah BPS)
+9 FKP07 Kepemilikan FKTP Jenis kepemilikan fasilitas kesehatan yang diakses oleh peserta pada kunjungan FKTP
+--- hal 16
+16
+16
+NO VARIABEL ISI VARIABEL PENJELASAN
+10 FKP08 Jenis FKTP Jenis fasilitas kesehatan yang diakses oleh peserta pada kunjungan FKTP
+11 FKP09 Tipe FKTP Tipe faskes yang diakses oleh peserta pada kunjungan FKTP
+12 FKP10 Tingkat Pelayanan FKTP Tingkat layanan yang diakses oleh peserta pada kunjungan FKTP
+13 FKP11 Jenis Poli FKTP Jenis poliklinik yang diakses oleh peserta pada kunjungan FKTP
+14 FKP12 Segmen Peserta saat akses layanan FKTP Jenis segmen peserta saat peserta mengakses FKTP
+15 FKP13 Status Pulang peserta Status peserta di akhir masa perawatan
+16 FKP14 Kode dan nama diagnosis ICD 10 (3 digit) Kode dan nama diagnosis berdasarkan 3 digit pertama kode ICD 10 yang diperoleh dari hasil input sistem informasi BPJS Kesehatan
+17 FKP15 Kode diagnosis (beragam 3-5 digit) Kode diagnosis hasil input di sistem BPJS Kesehatan berdasarkan kode ICD 10 (jumlah digit beragam pada semua observasi dengan rentang 3-5 digit)
+18 FKP16 Provinsi faskes tujuan rujukan Provinsi fasilitas kesehatan tujuan rujukan (sesuai kode wilayah BPS)
+--- hal 17
+17
+17
+NO VARIABEL ISI VARIABEL PENJELASAN
+19 FKP17 Kabupaten/Kota faskes tujuan rujukan Kabupaten/kota fasilitas kesehatan tujuan rujukan (sesuai kode wilayah BPS)
+20 FKP18 Kepemilikan faskes tujuan rujukan Kepemilikan fasilitas kesehatan tujuan rujukan
+21 FKP19 Jenis faskes tujuan rujukan Jenis fasilitas kesehatan tujuan rujukan
+22 FKP20 Tipe faskes tujuan rujukan Tipe fasilitas kesehatan tujuan rujukan
+23 FKP21 Poli faskes tujuan rujukan Poli fasilitas kesehatan tujuan rujukan
+24 FKP22 Jenis Kunjungan FKTP Jenis kunjungan FKTP
+--- hal 18
+18
+File Data Pelayanan FKRTL
+18
+--- hal 19
+19
+19
+NO VARIABEL ISI VARIABEL PENJELASAN
+1 PSTV01 Nomor peserta Nomor identifikasi peserta yang bersifat unik dan telah dideidentifikasi untuk melindungi identitas peserta sebenarnya
+2 PSTV02 Nomor keluarga
+Nomor yang mengidentifikasi kepala keluarga dalam sampel dan berfungsi 
+sebagai penanda keluarga (peserta BPJS Kesehatan dalam satu keluarga memiliki 
+nomor kepala keluarga yang sama)
+3 PSTV15 Bobot Faktor pengali yang menggambarkan jumlah individu di dalam populasi diwakili oleh individu di dalam sampel
+4 FKP02 ID kunjungan FKTP ID Kunjungan pada data pelayanan FKTP sebagai variabel untuk menggabungkan pelayanan FKTP dan FKRTL
+5 FKL02 ID Kunjungan FKRTL Nomor identifikasi unik untuk menandakan setiap kunjungan ke FKRTL oleh peserta
+6 FKL03 Tanggal datang kunjungan FKRTL Tanggal melakukan kunjungan
+7 FKL04 Tanggal pulang kunjungan FKRTL Tanggal menyelesaikan kunjungan
+8 FKL05 Provinsi FKRTL Provinsi fasilitas kesehatan tempat peserta mengakses pelayanan FKRTL
+9 FKL06 Kabupaten/Kota FKRTL Kabupaten/kota fasilitas kesehatan tempat peserta mengakses pelayanan FKRTL
+--- hal 20
+20
+20
+NO VARIABEL ISI VARIABEL PENJELASAN
+10 FKL07 Kepemilikan FKRTL Jenis kepemilikan dari fasilitas kesehatan rujukan tingkat lanjut
+11 FKL08 Jenis FKRTL Jenis fasilitas kesehatan rujukan tingkat lanjut
+12 FKL09 Tipe FKRTL Tipe fasilitas kesehatan rujukan tingkat lanjut
+13 FKL10 Tingkat Pelayanan FKRTL Tingkat layanan di fasilitas kesehatan rujukan tingkat lanjut (FKRTL)
+14 FKL11 Jenis Poli FKRTL Poli tempat melakukan kunjungan oleh peserta ke fasilitas kesehatan rujukan tingkat lanjut (FKRTL)
+15 FKL12 Segmen Peserta saat akses layanan FKRTL Segmen peserta saat peserta mengakses pelayanan kesehatan di FKRTL
+16 FKL13 Kelas rawat peserta Kelas rawat saat peserta mengakses pelayanan kesehatan di FKRTL
+17 FKL14 Status pulang dari FKRTL Status kepulangan peserta setelah mendapatkan pelayanan kesehatan di FKRTL
+18 FKL15 Kode dan nama diagnosis masuk ICD 10 (3 digit) Kode dan nama diagnosis masuk berdasarkan ICD 10 yang di-input ke aplikasi INA-CBGs berdasarkan 3 digit pertama
+--- hal 21
+21
+21
+NO VARIABEL ISI VARIABEL PENJELASAN
+19 FKL16 Kode ICD 10 diagnosis masuk FKRTL (3-6digit) Kode diagnosis masuk berdasarkan ICD 10 yang di-input ke aplikasi INA-CBGs(jumlah digit beragam pada semua observasi dengan rentang 3-5 digit)
+20 FKL17 Kode dan nama diagnosis primer ICD 10 (3 digit) Kode dan nama diagnosis primer berdasarkan ICD 10 yang di-input ke aplikasi INA-CBGs berdasarkan 3 digit pertama
+21 FKL18 Kode ICD 10 diagnosis primer FKRTL (3-6digit) Diagnosis Primer: diagnosis yang dipilih dokter pada hari terakhir perawatan dengan kriteria paling banyak menggunakan sumber daya atau hari rawatan paling lama.
+22 FKL19 Kode INACBGs
+Sistem kodifikasi dari diagnosis akhir dan tindakan/prosedur yang menjadi 
+output pelayanan, dengan acuan ICD-10 untuk diagnosis dan ICD-9 untuk 
+tindakan/prosedur
+1. Digit ke-1 (alfabetik) : menggambarkan kode CMG (Casemix Main 
+Groups)
+2. Digit ke-2 (numerik) : menggambarkan tipe kelompok kasus (Case
+Groups)
+3. Digit ke-3 (numerik) : menggambarkan spesifikasi kelompok kasus
+4. Digit ke-4 (romawi): menggambarkan tingkat keparahan kelompok kasus
+--- hal 22
+22
+22
+NO VARIABEL ISI VARIABEL PENJELASAN
+23 FKL20 INACBGs - Kode Casemix main groups (Digit ke-1) Case Mix Groups (CMG) sebagai klasifikasi tingkat pertama yang dilabelkan dengan huruf alfabet (A to Z) dan berhubungan dengan system organ tubuh yang disesuaikan dengan ICD 10
+24 FKL21
+INACBGs - Tipe kelompok 
+kasus atau case groups (Digit 
+ke-2)
+INA-CBGs-Tipe Kelompok kasus atau case groups (Digit ke-2)
+25 FKL22 INACBGs - Spesifikasi kelompok kasus (Digit ke-3)
+Case type: sub-group ketiga yang menunjukkan spesifik CBGs yang
+dilambangkan dengan numerik mulai dari 01 sampai dengan 99
+Sumber: Peraturan Menteri Kesehatan Republik Indonesia Nomor 76 Tahun 
+2016 tentang Pedoman Indonesian Case Base Groups (INA-CBG) 
+dalam  Pelaksanaan Jaminan Kesehatan Nasional
+26 FKL23 INACBGs - Tingkat keparahan kelompok kasus(Digit ke-4)
+Sub-group keempat merupakan resource intensity level yang
+menunjukkan tingkat keparahan kasus yang dipengaruhi adanya
+komorbiditas ataupun komplikasi dalam masa perawatan
+27 FKL25 Provinsi faskes perujuk Provinsi fasilitas kesehatan asal yang memberikan rujukan
+28 FKL26 Kabupaten/Kota faskes perujuk Kabupaten/kota fasilitas kesehatan asal yang memberikan rujukan
+--- hal 23
+23
+23
+NO VARIABEL ISI VARIABEL PENJELASAN
+29 FKL27 Kepemilikan faskes perujuk Kepemilikan fasilitas kesehatan asal yang memberikan rujukan
+30 FKL28 Jenis faskes perujuk Jenis fasilitas kesehatan asal yang memberikan rujukan
+31 FKL29 Tipe faskes perujuk Tipe fasilitas kesehatan asal yang memberikan rujukan
+32 FKL30 Jenis prosedur Jenis prosedur yang dilakukan pada pelayanan FKRTL
+33 FKL31 Tarif regional INACBGs
+Regionalisasi tarif terbagi menjadi 5 regional didasarkan pada indeks harga 
+konsumen (IHK)
+Sumber: Peraturan Menteri Kesehatan Republik Indonesia Nomor 52 Tahun 
+2016 tentang Standar Tarif Pelayanan Kesehatan dalam Penyelenggaraan
+Program Jaminan Kesehatan
+34 FKL32 Group Tarif INACBGs
+Grup tarif paket yang meliputi seluruh komponen sumber daya rumah sakit 
+yang digunakan dalam pelayanan baik medis maupun nonmedis.
+Lihat lampiran Peraturan Menteri Kesehatan Republik Indonesia Nomor 52 
+Tahun 2016 tentang Standar Tarif Pelayanan Kesehatan dalam 
+Penyelenggaraan Program Jaminan Kesehatan
+--- hal 24
+24
+24
+NO VARIABEL ISI VARIABEL PENJELASAN
+35 FKL33 Kode special sub-acute groups (SA) Kode special sub-acute groups
+36 FKL34 Tarif special sub-acute groups (SA) Tarif special sub-acute groups
+37 FKL35 Kode special procedures (SP) Kode special procedures
+38 FKL36 Deskripsi special procedures (SP) Deskripsi special procedures
+39 FKL37 Tarif special procedures (SP) Tarif special procedures
+40 FKL38 Kode special prosthesis (RR) Kode special prosthesis
+41 FKL39 Deskripsi special prosthesis (RR) Deskripsi special prosthesis
+42 FKL40 Tarif special prosthesis (RR) Tarif special prosthesis
+43 FKL41 Kode special investigation(SI) Kode special investigation
+44 FKL42 Deskripsi special investigation(SI) Deskripsi special investigation
+--- hal 25
+25
+25
+NO VARIABEL ISI VARIABEL PENJELASAN
+45 FKL43 Tarif special investigation(SI) Tarif special investigation
+46 FKL44 Kode special drugs (SD) Kode special drugs
+47 FKL45 Deskripsi special drugs (SD) Deskripsi special drugs
+48 FKL46 Tarif special drugs (SD) Tarif special drugs
+49 FKL47 Biaya Tagih - oleh fasilitas kesehatan (provider) Biaya yang ditagihkan untuk setiap ID kunjungan yang merupakan penjumlahan dari FKL33 + FKL35 + FKL38 + FKL41 + FKL44 + FKL47
+50 FKL48
+Biaya Verifikasi - BPJS 
+Kesehatan setelah dilakukan 
+verifikasi
+Biaya yang diverifikasi BPJS Kesehatan untuk setiap ID kunjungan
+--- hal 26
+26
+File Data Pelayanan FKTP Non Kapitasi
+26
+--- hal 27
+27
+27
+NO VARIABEL ISI VARIABEL PENJELASAN
+1 PSTV01 Nomor Peserta Nomor identifikasi peserta yang bersifat unik dan telah dideidentifikasi untuk melindungi identitas peserta sebenarnya
+2 PSTV02 Nomor keluarga
+Nomor yang mengidentifikasi kepala keluarga dalam sampel dan berfungsi 
+sebagai penanda keluarga (peserta BPJS Kesehatan dalam satu keluarga memiliki 
+nomor kepala keluarga yang sama)
+3 PSTV15 Bobot Faktor pengali yang menggambarkan jumlah individu di dalam populasi diwakili oleh individu di dalam sampel
+4 PNK02 ID Kunjungan Nomor identifikasi unik untuk menandakan setiap kunjungan FKTP oleh peserta
+5 PNK03 Tanggal kunjungan Tanggal melakukan kunjungan
+6 PNK04 Tanggal tindakan Tanggal melakukan tindakan
+7 PNK05 Tanggal pulang Tanggal menyelesaikan kunjungan
+8 PNK06 Provinsi faskes Provinsi tempat peserta mengakses fasilitas kesehatan tingkat pratama (FKTP)
+9 PNK07 Kode Kab/Kota faskes Kabupaten/kota tempat peserta mengakses fasilitas kesehatan tingkat pratama (FKTP)
+--- hal 28
+28
+28
+NO VARIABEL ISI VARIABEL PENJELASAN
+10 PNK08 Kepemilikan faskes Kepemilikan dari fasilitas kesehatan tingkat pratama (FKTP) tempat peserta berkunjung
+11 PNK09 Jenis faskes Jenis dari fasilitas kesehatan tingkat pertama (FKTP) tempat peserta berkunjung
+12 PNK10 Tipe faskes Tipe dari fasilitas kesehatan tingkat pertama (FKTP) tempat peserta berkunjung
+13 PNK11 Tingkat layanan Tingkat layanan yang diterima peserta di FKTP
+14 PNK12 Segmen peserta Segmen peserta saat mengakses FKTP
+15 PNK13
+Kode dan Nama 
+diagnosis berdasarkan 
+ICD-10 (3 digit)
+Kode dan nama diagnosis berdasarkan 3 digit pertama kode ICD 10 yang 
+diperoleh dari hasil input sistem informasi BPJS Kesehatan
+16 PNK13A
+Kode diagnosis 
+berdasarkan ICD-10 (3 
+digit)
+Kode dan nama diagnosis berdasarkan 3 digit pertama kode ICD 10 yang 
+diperoleh dari hasil input sistem informasi BPJS Kesehatan
+17 PNK14 Kode diagnosis (3-5 digit) Kode diagnosis menurut ICD 10 (jumlah digit tidak sama pada semua observasi dengan rentang 3-5 digit kode ICD 10)
+18 PNK15 Nama Diagnosis Nama diagnosis yang terbaca oleh sistem informasi BPJS Kesehatan berdasarkan kode diagnosis yang ter-input dalam sistem
+--- hal 29
+29
+29
+NO VARIABEL ISI VARIABEL PENJELASAN
+19 PNK16 Nama Tindakan Nama jenis tindakan yang dilakukan kepada pasien
+20 PNK17 Biaya tagih Biaya yang ditagihkan fasilitas kesehatan untuk setiap ID kunjungan
+21 PNK18 Biaya verifikasi Biaya yang diverifikasi BPJS Kesehatan untuk setiap nomor ID Kunjungan
+22 PNK19 Hasil pemeriksaan Hasil pemeriksaan gula darah puasa (GDP) 1
+23 PNK20 Hasil pemeriksaan Hasil pemeriksaan gula darah puasa (GDP) 2
+--- hal 30
+30
+File Data Pelayanan FKRTL 
+Diagnosa Sekunder
+30
+--- hal 31
+31
+31
+NO VARIABEL ISI VARIABEL PENJELASAN
+1 FKL02 ID kunjungan Nomor identifikasi unik untuk menandakan setiap kunjungan ke FKRTL oleh peserta
+2 FKL24 Kode diagnosis (beragam 3-5 digit) Kode diagnosis menurut ICD 10 (jumlah digit tidak sama pada semua observasi dengan rentang 3-5 digit kode ICD 10)
+3 FKL24A Kode diagnosis ICD 10 (3 digit) Kode dan nama diagnosis berdasarkan 3 digit pertama kode ICD 10 yang diperoleh dari hasil input sistem informasi BPJS Kesehatan
+4 FKL24B Kode dan nama diagnosis ICD 10 (3 digit) Kode dan nama diagnosis berdasarkan 3 digit pertama kode ICD 10 yang diperoleh dari hasil input sistem informasi BPJS Kesehatan
+===== Panduan Project Final Healthkathon 2026.pdf 11
+--- hal 1
+PANDUAN PROJECT FINAL
+Healthkathon 2026
+Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN: Efisiensi Risiko Program JKN
+N A M A  S O L U S I
+[isi nama solusi]
+N A M A  T I M
+[isi nama tim]
+I D  T I M
+[isi ID tim]
+K A T E G O R I
+[isi kategori]
+Ganti teks di dalam kotak. Slide 2 sampai 4 adalah petunjuk, hapus sebelum merekam video.
+--- hal 2
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Ketentuan Project Final (hapus sebelum merekam)i
+YANG WAJIB ADA DI VIDEO (boleh urut ulang dan tambah slide)
+1 Perkenalan tim (foto semua anggota)
+2 Judul ide, deskripsi, dan tujuan
+3 Latar belakang dan dampak
+4 Alur proses aplikasi yang dikembangkan
+5 Demo aplikasi atau prototype
+6 Penjelasan fitur
+7 Slide tambahan sesuai kebutuhan
+KETENTUAN VIDEO DAN SUBMIT
+• Durasi video maksimal 10 menit
+• Disarankan memakai rekaman Zoom Meeting
+• Unggah ke YouTube dengan pengaturan private
+• Submit tautan video melalui dashboard Healthkathon pada 19 
+Okt s.d. 1 Nov 2026
+BATASAN UMUM
+• Karya orisinal dan sesuai proposal yang diloloskan
+• Tidak memakai data peserta JKN riil tanpa izin resmi
+• Hindari SARA dan klaim tanpa dasar, cantumkan sumber data
+2
+--- hal 3
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Saran Waktu dan Checklist (hapus sebelum 
+merekam)10
+S A R A N  D U R A S I  P E R  B A G I A N  ( T OT A L  1 0  M E N I T )
+0,5
+Tim
+1 mnt
+Judul dan tujuan
+1,5 mnt
+Latar dan dampak
+1,5 mnt
+Alur proses
+3 mnt
+Demo
+1,5 mnt
+Fitur
+1 mnt
+Tambahan
+C H E C K L I S T  S E B E L U M  S U B M I T
+Video maksimal 10 menit Ketujuh isi minimal sudah ada
+Foto semua anggota tim tampil Demo menunjukkan aplikasi berjalan, bukan hanya slide
+Suara jelas dan tulisan di layar terbaca Video diunggah ke YouTube (private) dan tautan dapat dibuka
+Tautan disubmit di dashboard paling lambat 1 November 2026 Slide petunjuk 2 sampai 4 sudah dihapus
+3
+--- hal 4
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Perkenalan Tim1
+Nama tim: [isi]        |     Kategori: [isi]
+Foto
+anggota 1
+A N G G O T A  1
+[nama lengkap]
+[peran dalam tim]
+Keahlian atau pengalaman relevan (jujur 
+dan dapat diverifikasi)
+Foto
+anggota 2
+A N G G O T A  2
+[nama lengkap]
+[peran dalam tim]
+Keahlian atau pengalaman relevan (jujur 
+dan dapat diverifikasi)
+Foto
+anggota 3
+A N G G O T A  3
+[nama lengkap]
+[peran dalam tim]
+Keahlian atau pengalaman relevan (jujur 
+dan dapat diverifikasi)
+4
+--- hal 5
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Judul Ide, Deskripsi, dan Tujuan2
+N A M A  S O L U S I
+[Nama solusi Anda]
+S A T U  K A L I M A T  N I L A I  U T A M A
+[Solusi ini membantu ... agar ...]
+K A T E G O R I  D A N  S U B  K A T E G O R I
+[Efisiensi Risiko ... / sub kategori]
+D E S K R I P S I  S I N G K A T
+Jelaskan apa solusi Anda dan bagaimana cara kerjanya secara garis besar.
+T U J U A N
+Apa yang ingin dicapai? Tulis 2 sampai 3 tujuan yang spesifik dan dapat 
+diukur.
+5
+--- hal 6
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Latar Belakang dan Dampak3
+L A T A R  B E L A K A N G
+Persoalan spesifik apa yang ingin diselesaikan?
+Mengapa penting dan mendesak? Siapa yang terdampak?
+Bukti atau data apa yang memperkuat? (cantumkan sumber)
+D A M P A K
+Perbaikan apa yang dihasilkan dibandingkan kondisi saat ini? Jelaskan 
+dengan indikator yang terukur.
+[angka]
+indikator dampak 1
+(sebelum, sesudah)
+[angka]
+indikator dampak 2
+(sebelum, sesudah)
+[angka]
+indikator dampak 3
+(sebelum, sesudah)
+6
+--- hal 7
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Alur Proses Aplikasi4
+1. Input
+[jelaskan langkah ini]
+> 2. Proses
+[jelaskan langkah ini]
+> 3. Analisis AI
+[jelaskan langkah ini]
+> 4. Output
+[jelaskan langkah ini]
+> 5. Tindak lanjut
+[jelaskan langkah ini]
+P E N G G U N A  /  A K T O R
+Siapa yang memakai dan apa perannya?
+D A T A  Y A N G  D I P A K A I
+Sumber, jenis, dan keterbatasan data (tanpa 
+data JKN riil).
+T E K N O L O G I
+Teknologi dan model yang dipilih, serta 
+alasannya.
+7
+--- hal 8
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Demo Aplikasi / Prototype5
+Tempel tangkapan layar di sini,
+atau lakukan demo langsung dengan Zoom share screen
+S K E N A R I O  D E M O
+1
+[langkah demo 1]
+2
+[langkah demo 2]
+3
+[langkah demo 3]
+4
+[langkah demo 4]
+T A U T A N  P R O T O T Y P E  ( B I L A  A D A )
+[tautan aplikasi / prototype]
+8
+--- hal 9
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Penjelasan Fitur6
+1 [Nama fitur 1]
+Fungsi: apa yang dilakukan fitur ini?
+Menjawab masalah: bagian mana dari persoalan yang diselesaikan?
+2 [Nama fitur 2]
+Fungsi: apa yang dilakukan fitur ini?
+Menjawab masalah: bagian mana dari persoalan yang diselesaikan?
+3 [Nama fitur 3]
+Fungsi: apa yang dilakukan fitur ini?
+Menjawab masalah: bagian mana dari persoalan yang diselesaikan?
+4 [Nama fitur 4]
+Fungsi: apa yang dilakukan fitur ini?
+Menjawab masalah: bagian mana dari persoalan yang diselesaikan?
+9
+--- hal 10
+Project Final  Healthkathon 2026 Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN
+Slide Tambahan (sesuai kebutuhan)+
+Pilih yang paling menguatkan solusi Anda. Gandakan slide ini bila perlu, hapus bila tidak dipakai.
+Arsitektur teknis dan data
+Diagram arsitektur, sumber data, model yang 
+dipakai, dan keterbatasannya.
+Keamanan, privasi, dan tata kelola
+Perlindungan data pribadi, risiko penggunaan 
+AI, dan cara mitigasinya.
+Kesiapan implementasi
+Tingkat kematangan, kebutuhan untuk dipakai 
+di lapangan, dan skalabilitas.
+Rencana pengembangan
+Tahapan, sumber daya, dan target setelah 
+Healthkathon.
+Hasil uji atau validasi
+Pengujian yang sudah dilakukan dan hasilnya.
+Referensi dan sumber data
+Daftar sumber yang dipakai agar klaim dapat 
+ditelusuri.
+10
+--- hal 11
+Terima kasih
+T A U T A N P R O T O T Y P E  /  D EM O
+[isi tautan]
+T A U T A N R E P O S I T O R I  ( O P S I O N A L )
+[isi tautan]
+K O N T A K  T I M
+[nama dan email ketua tim]
+Detect Smarter, Protect JKN - Smarter Protection for a Stronger JKN

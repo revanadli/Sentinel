@@ -18,10 +18,11 @@ $summary = $pdo->query("
     SELECT
         COUNT(*)                                          AS total_kasus,
         SUM(label_sintetis)                               AS total_fraud_gt,
-        SUM(CASE WHEN tipe_fraud = 'P1' THEN 1 ELSE 0 END) AS p1,
-        SUM(CASE WHEN tipe_fraud = 'P2' THEN 1 ELSE 0 END) AS p2,
-        SUM(CASE WHEN tipe_fraud = 'P3' THEN 1 ELSE 0 END) AS p3,
-        SUM(CASE WHEN tipe_fraud = 'P4' THEN 1 ELSE 0 END) AS p4,
+        SUM(potensi_kerugian)                             AS total_potensi,
+        SUM(CASE WHEN pola_terdeteksi = 'P1' THEN 1 ELSE 0 END) AS p1,
+        SUM(CASE WHEN pola_terdeteksi = 'P2' THEN 1 ELSE 0 END) AS p2,
+        SUM(CASE WHEN pola_terdeteksi = 'P3' THEN 1 ELSE 0 END) AS p3,
+        SUM(CASE WHEN pola_terdeteksi = 'P4' THEN 1 ELSE 0 END) AS p4,
         SUM(total_biaya_tagih)                            AS total_biaya,
         AVG(skor)                                         AS avg_skor,
         MAX(skor)                                         AS max_skor,
@@ -66,6 +67,7 @@ foreach (['total_kasus','total_fraud_gt','p1','p2','p3','p4',
           'status_pending','status_review','status_verified','status_cleared','status_escalated'] as $k) {
     $summary[$k] = $cast($summary[$k]);
 }
+$summary['total_potensi'] = $summary['total_potensi'] ? (int)$summary['total_potensi'] : 0;
 $summary['total_biaya'] = $summary['total_biaya'] ? (int)$summary['total_biaya'] : 0;
 $summary['avg_skor']    = round((float)($summary['avg_skor'] ?? 0), 4);
 $summary['max_skor']    = round((float)($summary['max_skor'] ?? 0), 4);

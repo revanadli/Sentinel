@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
   <script src="chart.umd.min.js"></script>
   <script src="papaparse.min.js"></script>
-  <link rel="stylesheet" href="style.css?v=20261031_1"/>
+  <link rel="stylesheet" href="style.css?v=20261101_1"/>
   <meta name="color-scheme" content="light only"/>
 </head>
 <body>
@@ -64,7 +64,7 @@
     <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button><div class="topbar-left">
       <h1 id="page-title">Overview</h1>
       <span class="badge-mode" id="badge-mode">● Data</span>
-      <span class="badge-mode" id="badge-ts" style="background:rgba(34,211,238,.12);color:#22d3ee;margin-left:.4rem"></span>
+      <span class="badge-mode badge-ts" id="badge-ts"></span>
     </div>
     <div class="topbar-right">
       <div class="role-indicator" id="role-indicator">🏢 Verifikator</div>
@@ -77,53 +77,79 @@
   <!-- ══════ SECTION: OVERVIEW ══════ -->
   <section id="section-overview" class="section active">
 
+    <div class="synth-banner" id="synth-banner" style="display:none">
+      ⚠️ <strong>Data sintetis</strong> — seluruh angka performa di bawah dihitung pada data simulasi bertema skema BPJS, bukan data JKN riil. Angka riil baru dapat diukur saat pilot.
+    </div>
+
     <!-- KPI -->
     <div class="kpi-grid">
       <div class="kpi-card red">
         <div class="kpi-icon">🚨</div>
         <div class="kpi-value" id="kpi-flagged">—</div>
-        <div class="kpi-label">Kasus Terdeteksi</div>
-        <div class="kpi-sub" id="kpi-sub-flagged">dari 20.000 peserta</div>
+        <div class="kpi-label">Antrean Telaah</div>
+        <div class="kpi-sub" id="kpi-sub-flagged">—</div>
       </div>
       <div class="kpi-card amber">
         <div class="kpi-icon">💊</div>
         <div class="kpi-value" id="kpi-obat">—</div>
-        <div class="kpi-label">Fraud Obat (P1+P2)</div>
-        <div class="kpi-sub">Penyalahgunaan obat/alkes</div>
+        <div class="kpi-label">Dugaan Obat/Alkes</div>
+        <div class="kpi-sub">P1 + P2 · ke Apoteker</div>
       </div>
       <div class="kpi-card cyan">
         <div class="kpi-icon">🏥</div>
         <div class="kpi-value" id="kpi-layanan">—</div>
-        <div class="kpi-label">Fraud Layanan (P3)</div>
-        <div class="kpi-sub">Pelayanan tidak perlu</div>
+        <div class="kpi-label">Dugaan Layanan Tidak Perlu</div>
+        <div class="kpi-sub">P3 · ke Dokter</div>
       </div>
       <div class="kpi-card purple">
         <div class="kpi-icon">🪪</div>
         <div class="kpi-value" id="kpi-identitas">—</div>
-        <div class="kpi-label">Fraud Identitas (P4)</div>
-        <div class="kpi-sub">Penyalahgunaan identitas</div>
+        <div class="kpi-label">Dugaan Penyalahgunaan Identitas</div>
+        <div class="kpi-sub">P4 · ke Verifikator</div>
       </div>
     </div>
 
-    <!-- Metrik baris ke-2 -->
-    <div class="kpi-grid kpi-grid-3">
+    <div class="kpi-grid">
       <div class="kpi-card green">
         <div class="kpi-icon">🎯</div>
         <div class="kpi-value" id="kpi-precision">—</div>
-        <div class="kpi-label">Precision@100</div>
-        <div class="kpi-sub">tanpa false positive</div>
+        <div class="kpi-label" id="kpi-prec-label">Precision@K</div>
+        <div class="kpi-sub" id="kpi-prec-sub">—</div>
       </div>
       <div class="kpi-card blue">
         <div class="kpi-icon">📡</div>
         <div class="kpi-value" id="kpi-recall">—</div>
-        <div class="kpi-label">Recall (all fraud)</div>
-        <div class="kpi-sub">setelah fairness mitigation</div>
+        <div class="kpi-label">Recall di antrean</div>
+        <div class="kpi-sub" id="kpi-recall-sub">—</div>
       </div>
       <div class="kpi-card dark">
         <div class="kpi-icon">💰</div>
         <div class="kpi-value" id="kpi-biaya">—</div>
-        <div class="kpi-label">Total Biaya Tagih</div>
-        <div class="kpi-sub">kasus terdeteksi</div>
+        <div class="kpi-label">Potensi Kerugian (estimasi)</div>
+        <div class="kpi-sub" id="kpi-biaya-sub">—</div>
+      </div>
+      <div class="kpi-card teal">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-value" id="kpi-progress">—</div>
+        <div class="kpi-label">Progres Telaah</div>
+        <div class="kpi-sub" id="kpi-progress-sub">—</div>
+      </div>
+    </div>
+
+    <!-- Kalkulator break-even -->
+    <div class="chart-card full">
+      <div class="chart-header">
+        <h3>Kalkulator Nilai Telaah (Break-even)</h3>
+        <span class="chip">Isi asumsi biaya Anda</span>
+      </div>
+      <div class="be-grid">
+        <label class="be-input">Biaya telaah per kasus (Rp)
+          <input type="number" id="be-cost" min="0" step="1000" placeholder="isi asumsi Anda" oninput="renderBreakEven()"/>
+        </label>
+        <div class="be-item"><span>Precision yang dipakai</span><strong id="be-prec">—</strong><small id="be-prec-src"></small></div>
+        <div class="be-item"><span>Rata-rata potensi / kasus</span><strong id="be-avg">—</strong><small>estimasi, bukan kerugian terbukti</small></div>
+        <div class="be-item"><span>Break-even biaya telaah</span><strong id="be-be">—</strong><small>precision × potensi / kasus</small></div>
+        <div class="be-item"><span>Estimasi nilai bersih antrean</span><strong id="be-net">—</strong><small id="be-net-sub">isi biaya telaah</small></div>
       </div>
     </div>
 
@@ -133,9 +159,10 @@
         <div class="chart-header">
           <h3>Distribusi 3 Sub-Kategori Fraud</h3>
           <div class="legend-row">
-            <span class="dot red"></span> Obat
-            <span class="dot amber"></span> Layanan
+            <span class="dot amber"></span> Obat
+            <span class="dot cyan"></span> Layanan
             <span class="dot purple"></span> Identitas
+            <span class="dot grey"></span> Anomali ML
           </div>
         </div>
         <div class="chart-wrap"><canvas id="chartFraudType"></canvas></div>
@@ -149,7 +176,7 @@
     <!-- Timeline -->
     <div class="chart-card full">
       <div class="chart-header">
-        <h3>Timeline Kejadian per 10 Hari (180 hari observasi)</h3>
+        <h3>Timeline Kejadian per 10 Hari (<span id="horizon-label">—</span> hari observasi)</h3>
         <span class="chip">Jendela 30/60/90 hari sesuai Permenkes 16/2019</span>
       </div>
       <div class="chart-wrap tall"><canvas id="chartTimeline"></canvas></div>
@@ -237,8 +264,8 @@
         <div class="step-title">Feedback Loop</div>
         <div class="step-desc">
           Label hasil verifikasi<br/>
-          Retraining berkala<br/>
-          Laporan precision@K
+          Precision terverifikasi<br/>
+          Kalibrasi ambang berkala
         </div>
       </div>
     </div>
@@ -250,9 +277,9 @@
         <div class="masalah-title">Penyalahgunaan Obat/Alkes</div>
         <div class="masalah-desc">Obat sama ditebus di banyak faskes dalam waktu berdekatan, atau melebihi kebutuhan 30 hari</div>
         <div class="masalah-signals">
-          <span class="signal-chip">n_faskes_30d ≥ 3</span>
-          <span class="signal-chip">qty_ratio ≥ 3×</span>
-          <span class="signal-chip">gap_days ≤ 0.4</span>
+          <span class="signal-chip" id="th-n_faskes_30d">n_faskes_30d</span>
+          <span class="signal-chip" id="th-qty_ratio">qty_ratio</span>
+          <span class="signal-chip" id="th-gap_days">gap_days</span>
         </div>
         <div class="masalah-role">→ Dikonfirmasi oleh <strong>Apoteker</strong></div>
         <div class="masalah-stats">P1: <span id="m-p1">—</span> kasus · P2: <span id="m-p2">—</span> kasus</div>
@@ -262,7 +289,7 @@
         <div class="masalah-title">Pelayanan yang Tidak Perlu</div>
         <div class="masalah-desc">Rujukan/lab sama berulang lintas faskes tanpa perubahan diagnosis; dibandingkan norma per diagnosis</div>
         <div class="masalah-signals">
-          <span class="signal-chip">repeat_svc_60d ≥ 6</span>
+          <span class="signal-chip" id="th-repeat_svc_60d">repeat_svc_60d</span>
           <span class="signal-chip">dx_norm_z tinggi</span>
         </div>
         <div class="masalah-role">→ Dikonfirmasi oleh <strong>Dokter</strong></div>
@@ -273,7 +300,7 @@
         <div class="masalah-title">Penyalahgunaan Identitas</div>
         <div class="masalah-desc">Satu NIK terpakai di wilayah berjauhan pada hari berdekatan, atau lonjakan mendadak vs riwayat sendiri</div>
         <div class="masalah-signals">
-          <span class="signal-chip">geo_time_conflict ≥ 1</span>
+          <span class="signal-chip" id="th-geo_time_conflict">geo_time_conflict</span>
           <span class="signal-chip">use_vs_self tinggi</span>
         </div>
         <div class="masalah-role">→ Ditelaah oleh <strong>Verifikator BPJS</strong></div>
@@ -285,7 +312,7 @@
     <div class="fairness-banner">
       <span class="fairness-icon">⚖️</span>
       <div>
-        <strong>Prinsip Fairness:</strong> Skor anomali dinormalisasi per kelompok (kronis × usia bracket) — pasien lansia/kronis yang memang sering berobat tidak didiskriminasi. Laju flag kronis: 2.26% → 1.10% setelah mitigasi.
+        <strong>Prinsip Fairness:</strong> Skor anomali dinormalisasi per kelompok (kronis × usia bracket) — pasien lansia/kronis yang memang sering berobat tidak didiskriminasi. Laju flag pasien kronis non-fraud: <span id="fair-kronis-before">—</span> → <span id="fair-kronis-after">—</span> setelah mitigasi.
       </div>
     </div>
   </section>
@@ -299,11 +326,18 @@
       </div>
       <div class="filter-group">
         <select id="filter-type" onchange="filterTable()">
-          <option value="">Semua Tipe</option>
+          <option value="">Semua Pola</option>
           <option value="P1">P1 – Drug Shopping</option>
-          <option value="P2">P2 – Qty Berlebih</option>
-          <option value="P3">P3 – Dup. Layanan</option>
-          <option value="P4">P4 – Identity Fraud</option>
+          <option value="P2">P2 – Qty / Tebus Dini</option>
+          <option value="P3">P3 – Layanan Berulang</option>
+          <option value="P4">P4 – Identitas Lintas Wilayah</option>
+          <option value="AN">AN – Anomali ML</option>
+        </select>
+        <select id="filter-prio" onchange="filterTable()">
+          <option value="">Semua Prioritas</option>
+          <option value="Segera">Segera</option>
+          <option value="Tinggi">Tinggi</option>
+          <option value="Sedang">Sedang</option>
         </select>
         <select id="filter-role" onchange="filterTable()">
           <option value="">Semua Role</option>
@@ -321,21 +355,22 @@
         </select>
       </div>
       <div class="table-count" id="table-count">—</div>
+      <button class="btn-export" onclick="exportDecisions()" title="Unduh antrean beserta status & catatan verifikasi">⬇ Ekspor keputusan</button>
     </div>
 
     <div class="table-wrap">
       <table class="cases-table">
         <thead>
           <tr>
+            <th>#</th>
             <th>ID Pseudonim</th>
             <th>Sub-Kategori</th>
-            <th>Tipe</th>
             <th>Alasan Flag</th>
             <th>Role</th>
             <th>Provinsi</th>
             <th>Kunjungan</th>
-            <th>Biaya Tagih</th>
-            <th>Skor</th>
+            <th>Potensi Kerugian</th>
+            <th>Prioritas</th>
             <th>Status</th>
             <th>Aksi</th>
           </tr>
@@ -351,17 +386,17 @@
     <div class="charts-row">
       <div class="chart-card wide">
         <div class="chart-header">
-          <h3>Precision@K — Rules vs IsolationForest vs Gabungan</h3>
+          <h3>Precision@K — Rules vs IsolationForest vs Skor Final</h3>
           <div class="legend-row">
             <span class="dot indigo"></span> Rules
             <span class="dot cyan"></span> IsolationForest
-            <span class="dot amber"></span> Gabungan
+            <span class="dot amber"></span> Skor Final
           </div>
         </div>
         <div class="chart-wrap tall"><canvas id="chartModelPrec"></canvas></div>
       </div>
       <div class="chart-card">
-        <div class="chart-header"><h3>Recall per Sub-Kategori</h3></div>
+        <div class="chart-header"><h3>Recall per Pola (data sintetis)</h3></div>
         <div class="chart-wrap tall"><canvas id="chartRecallType"></canvas></div>
       </div>
     </div>
@@ -382,54 +417,29 @@
         <div class="fairness-row"><span>Decoy ter-flag (%)</span><span id="f-decoy-after" class="fval">—</span></div>
       </div>
       <div class="fairness-card warn-card">
-        <h3>⚠️ Hard-Stop (tidak dipakai)</h3>
+        <h3>⚠️ Pembanding: Blokir Otomatis (tidak dipakai)</h3>
         <div class="fairness-row warn"><span>Peserta Diblokir</span><span id="hs-diblokir" class="fval warn">—</span></div>
         <div class="fairness-row warn"><span>Precision</span><span id="hs-prec" class="fval warn">—</span></div>
         <div class="fairness-row"><span>Recall</span><span id="hs-recall" class="fval">—</span></div>
         <div class="fairness-row warn"><span>Decoy Diblokir</span><span id="hs-decoy" class="fval red">—</span></div>
-        <div class="hs-note">Keputusan ada di manusia — tidak ada blokir otomatis (Permenkes 16/2019 Pasal 6)</div>
+        <div class="hs-note" id="hs-note">Keputusan ada di manusia — tidak ada blokir otomatis (Permenkes 16/2019)</div>
       </div>
     </div>
 
-    <!-- Metrik Ringkasan per Sub-Kategori -->
+    <!-- Ringkasan metrik di titik operasi -->
     <div class="features-card" style="margin-top:1.2rem">
-      <h3>📊 Ringkasan Metrik Deteksi (Data Sintetis 20.000 Peserta)</h3>
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.8rem;margin-top:.8rem">
-        <div class="feat-item" style="text-align:center;padding:1rem .8rem">
-          <div style="font-size:1.5rem;font-weight:700;color:#f59e0b" id="m-prec100">—</div>
-          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Precision@100</div>
-          <div style="font-size:.65rem;color:var(--muted)">top 100 kasus</div>
-        </div>
-        <div class="feat-item" style="text-align:center;padding:1rem .8rem">
-          <div style="font-size:1.5rem;font-weight:700;color:#22d3ee" id="m-recall-all">—</div>
-          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Overall Recall</div>
-          <div style="font-size:.65rem;color:var(--muted)">setelah fairness</div>
-        </div>
-        <div class="feat-item obat" style="text-align:center;padding:1rem .8rem">
-          <div style="font-size:1.5rem;font-weight:700;color:#f59e0b" id="m-rec-p1p2">—</div>
-          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Recall P1+P2</div>
-          <div style="font-size:.65rem;color:var(--muted)">💊 Penyalahgunaan Obat</div>
-        </div>
-        <div class="feat-item layanan" style="text-align:center;padding:1rem .8rem">
-          <div style="font-size:1.5rem;font-weight:700;color:#22d3ee" id="m-rec-p3">—</div>
-          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Recall P3</div>
-          <div style="font-size:.65rem;color:var(--muted)">🏥 Pelayanan Tidak Perlu</div>
-        </div>
-        <div class="feat-item identitas" style="text-align:center;padding:1rem .8rem">
-          <div style="font-size:1.5rem;font-weight:700;color:#a855f7" id="m-rec-p4">—</div>
-          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Recall P4</div>
-          <div style="font-size:.65rem;color:var(--muted)">🪪 Penyalahgunaan Identitas</div>
-        </div>
-        <div class="feat-item" style="text-align:center;padding:1rem .8rem">
-          <div style="font-size:1.5rem;font-weight:700;color:#6366f1" id="m-decoy-rate">—</div>
-          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Decoy ter-flag</div>
-          <div style="font-size:.65rem;color:var(--muted)">false positive rate</div>
-        </div>
-      </div>
-      <p style="font-size:.7rem;color:var(--muted);margin-top:.8rem">
-        ⓘ P4 recall 88.7% (bukan 100%) karena 30% kasus menggunakan hari berdekatan (bukan hari persis sama), sehingga geo_time_conflict=0 dan hanya ditangkap IsolationForest.
-        P2 recall 95% karena 40% kasus borderline qty 75-89 tablet. Ini merepresentasikan kondisi data nyata.
-      </p>
+      <h3>📊 Ringkasan di Titik Operasi (<span id="ops-k">—</span> kasus teratas · <span id="n-peserta-label">—</span> peserta sintetis)</h3>
+      <div class="metric-grid" id="metrics-grid"></div>
+      <p class="metric-note" id="metric-note"></p>
+    </div>
+
+    <div class="features-card">
+      <h3>📉 Sensitivitas terhadap Prevalensi Fraud</h3>
+      <p class="metric-note" style="margin-top:0">Bila fraud nyata lebih jarang dari data simulasi, precision pada ambang yang sama turun. Angka ini perlu dikalibrasi saat pilot.</p>
+      <div class="table-wrap"><table class="cases-table" style="min-width:0">
+        <thead><tr><th>Prevalensi fraud</th><th>Perkiraan precision antrean</th></tr></thead>
+        <tbody id="sens-body"></tbody>
+      </table></div>
     </div>
 
     <!-- 7 Fitur -->
@@ -453,7 +463,7 @@
         </div>
         <div class="feat-item layanan">
           <div class="feat-name">repeat_svc_60d</div>
-          <div class="feat-sub">Lab/rujukan sama berulang / 60 hari</div>
+          <div class="feat-sub">Poli & diagnosis sama berulang / 60 hari</div>
           <div class="feat-cat">🏥 Layanan</div>
         </div>
         <div class="feat-item layanan">
@@ -463,12 +473,12 @@
         </div>
         <div class="feat-item identitas">
           <div class="feat-name">geo_time_conflict</div>
-          <div class="feat-sub">2 provinsi berbeda dalam 1 hari</div>
+          <div class="feat-sub">Provinsi berbeda dalam ≤ 1 hari</div>
           <div class="feat-cat">🪪 Identitas</div>
         </div>
         <div class="feat-item identitas">
           <div class="feat-name">use_vs_self</div>
-          <div class="feat-sub">Lonjakan vs median riwayat sendiri</div>
+          <div class="feat-sub">Lonjakan kuantitas vs rata-rata riwayat sendiri</div>
           <div class="feat-cat">🪪 Identitas</div>
         </div>
       </div>
@@ -526,10 +536,10 @@
           <p>Pilih kasus dari <strong>Kartu Kasus</strong> dan klik "Analisis AI" untuk kirim konteksnya ke AI.</p>
         </div>
         <div class="ctx-stats">
-          <div class="ctx-row"><span>Total Kasus</span><strong id="ctx-total">—</strong></div>
-          <div class="ctx-row"><span>Fraud (GT)</span><strong id="ctx-fraud">—</strong></div>
-          <div class="ctx-row"><span>Precision@100</span><strong id="ctx-prec">—</strong></div>
-          <div class="ctx-row"><span>Recall</span><strong id="ctx-rec">—</strong></div>
+          <div class="ctx-row"><span>Total antrean</span><strong id="ctx-total">—</strong></div>
+          <div class="ctx-row"><span>Benar fraud (label sintetis)</span><strong id="ctx-fraud">—</strong></div>
+          <div class="ctx-row"><span id="ctx-prec-label">Precision@K</span><strong id="ctx-prec">—</strong></div>
+          <div class="ctx-row"><span>Recall di antrean</span><strong id="ctx-rec">—</strong></div>
         </div>
       </div>
     </div>
@@ -575,6 +585,7 @@
       <button onclick="closeCaseModal()">✕</button>
     </div>
     <div class="modal-body" id="case-modal-body"></div>
+    <div class="modal-note"><label for="case-note">Catatan verifikator (tersimpan di log audit)</label><textarea id="case-note" rows="2" placeholder="Hasil cek lapangan / alasan keputusan"></textarea></div>
     <div class="modal-footer">
       <div class="modal-footer-left">
         <button class="btn-pending" onclick="setPending()" title="Kembalikan status kasus menjadi Pending">🕐 Pending</button>
@@ -588,6 +599,6 @@
   </div>
 </div>
 
-<script src="app.js?v=20261031_2"></script>
+<script src="app.js?v=20261101_1"></script>
 </body>
 </html>

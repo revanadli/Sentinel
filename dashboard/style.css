@@ -1552,5 +1552,116 @@ body {
   .search-box { min-width: unset; }
   .filter-group { flex-direction: column; }
   .table-count { margin-left: 0; }
-  .topbar { padding: var(--sp-3) var(--sp-4); }
+  .topbar { padding: var(--sp-3) var(--sp-4); flex-wrap: wrap; gap: var(--sp-2); }
+  .topbar-left { flex-wrap: wrap; min-width: 0; }
+  .topbar-right { flex-wrap: wrap; min-width: 0; }
+  .role-indicator { display: none; }
+  .data-status { max-width: 52vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .modal-box { max-height: 92vh; display: flex; flex-direction: column; }
+  .modal-body { max-height: none; flex: 1; min-height: 0; }
+  .modal-footer { flex-wrap: wrap; overflow-y: auto; }
+  .modal-footer button { flex: 1 1 auto; }
+  .cases-table { min-width: 880px; }
+  .ai-layout { height: calc(100vh - 150px); min-height: 420px; }
+  .alur-step { width: 100%; max-width: 360px; }
+  .chart-wrap { min-width: 0; }
 }
+
+.main-content { min-width: 0; }
+.chart-card, .kpi-card, .features-card { min-width: 0; }
+
+/* ── TAMBAHAN: antrean, break-even, metrik, detail ───────────────── */
+.kpi-card.teal::before { background: var(--green); }
+.kpi-card.teal .kpi-value { color: var(--green); }
+.kpi-value { overflow-wrap: anywhere; }
+
+.synth-banner {
+  background: var(--amber-lt); border: 1px solid var(--amber-bdr); color: #92400e;
+  border-radius: var(--rs); padding: var(--sp-3) var(--sp-4); font-size: .78rem; line-height: 1.5;
+}
+.badge-ts { background: var(--cyan-lt); color: var(--cyan); border: 1px solid var(--cyan-bdr); margin-left: .4rem; animation: none; }
+
+.be-grid {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--sp-3); padding: var(--sp-4) var(--sp-5) var(--sp-5);
+}
+.be-input { display: flex; flex-direction: column; gap: var(--sp-1); font-size: .7rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.be-input input {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rs); padding: var(--sp-2) var(--sp-3);
+  font-size: .9rem; font-family: inherit; color: var(--text); width: 100%;
+}
+.be-input input:focus { outline: none; border-color: var(--borderF); }
+.be-item { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rs); padding: var(--sp-3); display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.be-item span { font-size: .65rem; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.be-item strong { font-size: 1.15rem; color: var(--text); overflow-wrap: anywhere; }
+.be-item strong.neg { color: var(--red); } .be-item strong.pos { color: var(--green); }
+.be-item small { font-size: .65rem; color: var(--muted); line-height: 1.35; }
+
+.btn-export {
+  background: var(--bg2); border: 1px solid var(--border); color: var(--text2); font-size: .74rem; font-weight: 600;
+  padding: var(--sp-2) var(--sp-3); border-radius: var(--rs); cursor: pointer; white-space: nowrap;
+}
+.btn-export:hover { border-color: var(--accent-bdr); color: var(--accent); }
+
+.metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: var(--sp-3); }
+.feat-item.metric { text-align: center; padding: var(--sp-4) var(--sp-3); }
+.metric-val { font-size: 1.45rem; font-weight: 700; color: var(--text); }
+.metric-lbl { font-size: .72rem; font-weight: 600; color: var(--text2); margin-top: .25rem; }
+.metric-sub { font-size: .65rem; color: var(--muted); margin-top: 2px; }
+.metric-note { font-size: .72rem; color: var(--muted); margin-top: var(--sp-3); line-height: 1.55; }
+
+.cases-table td.rank { font-weight: 700; color: var(--muted); text-align: center; }
+.cases-table td.num  { text-align: center; }
+.idcell { font-size: .72rem; color: var(--dim); }
+.jenis { max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+.provcell { font-size: .75rem; }
+.alasan-chip.more { background: var(--accent-lt); color: var(--accent); border-color: var(--accent-bdr); font-family: inherit; }
+.page-gap { color: var(--muted); align-self: center; }
+.type-badge.AN { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
+
+.empty-row { text-align: center; padding: 2.5rem 1.5rem; color: var(--muted); font-size: .82rem; }
+.empty-ico { font-size: 2.2rem; margin-bottom: .5rem; }
+.empty-title { font-weight: 600; font-size: .9rem; color: var(--text); margin-bottom: .3rem; }
+.empty-sub { font-size: .78rem; color: var(--dim); margin-bottom: .8rem; }
+.btn-reset { background: var(--accent-lt); border: 1px solid var(--accent-bdr); color: var(--accent); font-size: .78rem; font-weight: 600; padding: .4rem .9rem; border-radius: 6px; cursor: pointer; }
+
+.reason-list { display: flex; flex-direction: column; gap: .35rem; margin-top: .4rem; }
+.reason { background: var(--red-lt); border-left: 3px solid var(--red); padding: .4rem .6rem; border-radius: 4px; font-size: .8rem; color: #b91c1c; }
+.reason.muted { background: var(--bg3); border-color: var(--border); color: var(--muted); }
+.feat-table { width: 100%; border-collapse: collapse; font-size: .74rem; }
+.feat-table th, .feat-table td { padding: var(--sp-2) var(--sp-3); border-bottom: 1px solid var(--border); text-align: left; }
+.feat-table th { font-size: .62rem; text-transform: uppercase; color: var(--muted); letter-spacing: .05em; background: var(--bg3); }
+.feat-table td.num { text-align: right; font-family: 'Courier New', monospace; }
+.feat-table tr.hit td { background: var(--red-lt); color: #b91c1c; font-weight: 600; }
+.checklist { margin: .3rem 0 0 1.1rem; padding: 0; font-size: .78rem; line-height: 1.6; color: var(--text2); }
+.detail-item .amt { color: var(--amber); font-weight: 700; }
+.detail-item small { display: block; color: var(--muted); font-size: .68rem; margin-top: 2px; }
+.detail-item .wrap { word-break: break-all; }
+.demo-gt { background: var(--amber-lt); border-color: var(--amber-bdr); }
+
+.modal-note { padding: 0 var(--sp-5) var(--sp-4); }
+.modal-note label { display: block; font-size: .7rem; font-weight: 600; color: var(--text2); margin-bottom: var(--sp-1); }
+.modal-note textarea { width: 100%; resize: vertical; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--rs); padding: var(--sp-2) var(--sp-3); font-family: inherit; font-size: .8rem; color: var(--text); }
+
+.md-code { background: var(--bg3); padding: .1em .35em; border-radius: 4px; font-size: .85em; color: #4338ca; }
+.md-h3 { margin: .85rem 0 .35rem; font-size: .92rem; font-weight: 700; color: var(--text); }
+.md-h4 { margin: .75rem 0 .25rem; font-size: .85rem; font-weight: 700; color: var(--accent); }
+.md-ul { padding-left: 1.25rem; margin: .4rem 0; } .md-ul li { margin: .2rem 0; line-height: 1.6; }
+.md-gap { margin: .5rem 0; }
+
+@media (max-width: 1280px) { .be-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 960px)  { .be-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .be-input { grid-column: 1 / -1; } }
+@media (max-width: 640px)  {
+  .be-grid { grid-template-columns: 1fr; padding: var(--sp-3); }
+  .btn-export { width: 100%; }
+  .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .feat-table { font-size: .68rem; }
+  .feat-table th, .feat-table td { padding: var(--sp-1) var(--sp-2); }
+  .jenis { max-width: 120px; }
+}
+
+/* Tabel kasus: kolom alasan lebih lega, provinsi diringkas */
+.cases-table td:nth-child(4) { min-width: 250px; }
+.alasan-chip { white-space: normal; font-family: inherit; font-size: .68rem; font-weight: 600; line-height: 1.35; padding: 2px 6px; max-width: 280px; }
+.cases-table td:nth-child(6) { min-width: 110px; }
+.modal-note { margin-top: var(--sp-3); }
+.dot.grey { background: var(--muted); }

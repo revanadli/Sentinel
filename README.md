@@ -1,136 +1,102 @@
-# 🛡️ JKN Sentinel — AI Fraud Detection System
+# 🛡️ JKN Sentinel — Antrean Telaah Fraud Klaim JKN
 **Healthkathon 2026** | Tim: Fayad, Nabil, Revan
 
-Sistem deteksi fraud klaim JKN/BPJS Kesehatan berbasis AI (Rules + Isolation Forest) yang transparan, adil, dan audit-ready.
+Sistem yang mengubah data klaim JKN menjadi **antrean kasus beralasan** untuk petugas (Apoteker, Dokter, Verifikator). Bukan vonis, bukan blokir otomatis: setiap temuan berstatus *perlu verifikasi* dan keputusan akhir ada di manusia.
+
+> ⚠️ **Prototipe ini berjalan pada data sintetis** yang mengikuti skema data sampel BPJS Kesehatan. Semua angka performa membuktikan bahwa mesin bekerja sesuai desain, **bukan** akurasi pada data JKN riil. Angka riil baru dapat diukur saat pilot (butuh MoU & izin data).
 
 ---
 
-## 🎯 Tentang Project
+## 🎯 Masalah yang dijawab
 
-Sistem ini memantau dan mendeteksi **3 Masalah Utama Fraud Klaim BPJS**:
-1. 💊 **Penyalahgunaan Obat (P1 & P2)**: Deteksi *drug shopping* lintas faskes/provinsi dan klaim kuantitas obat berlebihan (melebihi dosis terapi bulanan). Ditugaskan ke role **Apoteker**.
-2. 🏥 **Pelayanan yang Tidak Perlu (P3)**: Deteksi duplikasi klaim rujukan/tindakan poli yang sama berkali-kali dalam 60 hari. Ditugaskan ke role **Dokter**.
-3. 🪪 **Penyalahgunaan Identitas (P4)**: Deteksi kartu peserta yang sama dipakai berobat di 2 provinsi berbeda dalam 1 hari yang sama. Ditugaskan ke role **Verifikator**.
+| Masalah | Pola terdeteksi | Sinyal (rule) | Petugas |
+|---|---|---|---|
+| Penyalahgunaan obat/alkes | **P1** drug shopping · **P2** kuantitas berlebih / tebus dini | obat sama di ≥ 3 faskes / 30 hari · kuantitas ≥ 2,8× kebutuhan · tebus ulang sebelum 40% masa terapi | Apoteker |
+| Pelayanan yang tidak perlu | **P3** layanan sama berulang | poli & diagnosis sama ≥ 5× / 60 hari | Dokter |
+| Penyalahgunaan identitas | **P4** identitas dipakai lintas wilayah | kunjungan di provinsi berbeda ≤ 1 hari | Verifikator |
+| Anomali tanpa rule tunggal | **AN** | skor IsolationForest tinggi (alasan = fitur paling menyimpang) | Verifikator |
 
-Semua temuan dialirkan ke antrean verifikasi petugas dengan opsi tindakan:
-- **✅ Flag Salah (Bukan Fraud)**
-- **🚨 Konfirmasi Fraud**
-- **⬆️ Eskalasi Audit**
-- **✨ Analisis Mendalam via AI (Google Gemini)**
+Ambang rule hidup di satu tempat (`TH` di `sentinel_prototype.py`) dan diekspor ke `results.json`, sehingga dashboard selalu menampilkan angka yang sama dengan mesin.
 
----
+**Pola dan role diturunkan dari rule yang menyala**, bukan dari label simulasi. Label sintetis (`label_sintetis`, `tipe_fraud`) hanya disimpan untuk evaluasi dan ditandai "hanya demo" di dashboard.
 
-## ⚡ Panduan Menjalankan Aplikasi (Untuk Rekan Tim)
-
-Ada **2 Cara** menjalankan project ini:
-
-### 🟢 CARA 1: Paling Cepat & Simpel (Mode CSV — Tanpa XAMPP)
-*Gunakan cara ini untuk langsung melihat tampilan dashboard dan demo.*
-
-1. **Pastikan dependencies Python terinstall:**
-   ```bash
-   pip install numpy pandas scikit-learn
-   ```
-
-2. **Jalankan script AI / Machine Learning (cukup sekali di awal):**
-   ```bash
-   cd c:/bejana/sentinel/Sentinel
-   python sentinel_prototype.py
-   ```
-   *(Perintah ini akan memproses 20.000 data sampel dan menghasilkan `kartu_kasus.csv`, `results.json`, serta `results2.json`).*
-
-3. **Nyalakan web server lokal:**
-   > ⚠️ **PENTING:** Jalankan perintah ini dari folder utama `Sentinel`, **JANGAN** dari dalam folder `dashboard/`!
-   ```bash
-   python -m http.server 8080
-   ```
-
-4. **Buka di Browser:**
-   Buka URL berikut di Chrome/Edge/Firefox:
-   👉 **[http://localhost:8080/dashboard/](http://localhost:8080/dashboard/)**  
-   *(Pastikan ada garis miring `/` di ujung kata dashboard)*.
-
----
-
-### 🔵 CARA 2: Full-Stack dengan Database (Mode XAMPP + MySQL)
-*Gunakan cara ini jika ingin data kasus dan aksi verifikasi tersimpan permanen di MySQL.*
-
-1. Buka **XAMPP Control Panel**, lalu klik **Start** pada **Apache** dan **MySQL**.
-2. Salin seluruh isi folder `Sentinel/` ke folder web XAMPP Anda:
-   `C:\xampp\htdocs\sentinel\`
-3. Buka browser ke: `http://localhost/phpmyadmin`
-   - Buat database baru dengan nama: `sentinel_db`
-   - Klik tab **Import**, pilih file `backend/schema.sql`, lalu klik **Import**.
-4. Buka file `backend/.env` (atau edit dari `backend/.env.example`), pastikan konfigurasi DB sesuai:
-   ```env
-   DB_HOST=localhost
-   DB_NAME=sentinel_db
-   DB_USER=root
-   DB_PASS=
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
-5. Buka dashboard di browser:
-   👉 **[http://localhost/sentinel/dashboard/](http://localhost/sentinel/dashboard/)**
-6. Klik tombol **"⬆ Import DB"** di pojok kanan atas untuk memasukkan data CSV ke dalam database MySQL.
-
----
-
-## 📁 Struktur Berkas
+## 🔄 Alur
 
 ```
-Sentinel/
-├── sentinel_prototype.py      # Engine ML utama (Feature extraction 7 fitur + Rules + IsolationForest)
-├── generate_dataset.py        # Dataset benchmark generator & evaluasi ML
-├── audit_metrics.py           # Script audit cepat untuk memvalidasi metrik
-│
-├── dashboard/                 # Frontend Dashboard
-│   ├── index.html             # Halaman utama (Overview, Alur, Kartu Kasus, Model, AI)
-│   ├── style.css              # Styling dark-mode & glassmorphism
-│   └── app.js                 # Logika interaktif, humanisasi alasan, role switcher & API
-│
-├── backend/                   # Backend PHP (Opsional / XAMPP)
-│   ├── config.php             # Koneksi PDO & environment loader
-│   ├── schema.sql             # Skema 4 tabel MySQL (kartu_kasus, investigasi_log, dll)
-│   └── api/
-│       ├── cases.php          # API filter, sort, & pagination kasus
-│       ├── stats.php          # API statistik agregasi
-│       ├── verify.php         # API audit status verifikasi
-│       ├── chat.php           # API proxy aman Gemini AI
-│       └── import.php         # API import CSV ke MySQL
-│
-├── kartu_kasus.csv            # 540 kasus terdeteksi lengkap dengan alasan & role
-├── results.json               # Hasil metrik evaluasi model (Precision@K)
-└── results2.json              # Metrik fairness per kelompok & tipe fraud
+Data FKTP/FKRTL ─▶ Pseudonim (SHA-256) ─▶ 7 fitur ─▶ Rules + IsolationForest
+   ─▶ normalisasi per kelompok (kronis × usia) ─▶ antrean top-K (kapasitas telaah)
+   ─▶ kartu kasus + alasan + prioritas ─▶ keputusan petugas ─▶ precision terverifikasi
 ```
 
----
+* **Titik operasi** = kapasitas telaah (`REVIEW_BUDGET_PCT`, default 3% peserta), *bukan* jumlah fraud sebenarnya.
+* **Prioritas**: peringkat ≤ 100 *Segera*, ≤ 300 *Tinggi*, sisanya *Sedang*.
+* **Potensi kerugian** = estimasi biaya klaim berlebih/berulang (bukan kerugian terbukti).
+* **Break-even** (dashboard › Overview): `precision × potensi per kasus ≥ biaya telaah per kasus`. Setelah ≥ 20 keputusan, precision *terverifikasi* menggantikan precision simulasi.
 
-## 🤖 Menghubungkan Fitur AI Investigator (Gemini)
+## ⚡ Menjalankan
 
-1. Dapatkan API Key Google Gemini gratis di **[aistudio.google.com](https://aistudio.google.com)**.
-2. Pada Dashboard, klik menu **⚙️ Pengaturan** di pojok kanan bawah.
-3. Tempel API Key Anda pada kolom **Google Gemini API Key**, lalu klik **Simpan**.
-4. Masuk ke menu **Detail** kasus mana pun $\rightarrow$ klik **✨ Analisis AI** $\rightarrow$ AI akan membedah kasus secara klinis dan memberikan checklist investigasi lapangan.
+```bash
+pip install -r requirements.txt
+python sentinel_prototype.py          # ±15 detik → kartu_kasus.csv + results.json
+python -m http.server 8080            # jalankan dari folder Sentinel (bukan dashboard/)
+```
+Buka **http://localhost:8080/dashboard/**.
 
----
+Opsional: `SENTINEL_SALT=<rahasia>` untuk salt pseudonimisasi (default hanya untuk demo).
 
-## 📊 Metrik Performa Model (Hasil Evaluasi Terkini)
+### Mode database (XAMPP + MySQL, opsional)
+1. Start Apache & MySQL, salin folder `Sentinel/` ke `C:\xampp\htdocs\sentinel\` (atau jalankan `setup_xampp.bat`).
+2. Impor `backend/schema.sql` di phpMyAdmin. **Jika sebelumnya sudah pernah impor, hapus tabel `kartu_kasus` lebih dulu** (kolom berubah).
+3. Salin `backend/.env.example` → `backend/.env`, isi `GEMINI_API_KEY` bila ingin AI.
+4. Buka **http://localhost/sentinel/dashboard/** → klik **⬆ Import DB**. Re-import tidak menimpa status verifikasi yang sudah diisi petugas.
 
-| Metrik | Nilai | Penjelasan untuk Dewan Juri |
-| :--- | :--- | :--- |
-| **Precision@100** | **100%** | Pada top 100 kasus teratas, rules menangkap pelanggaran berat yang sangat eksplisit. |
-| **Precision@300** | **96.7%** | Menurun wajar karena model mulai menangani kasus anomali samar. |
-| **Precision@600** | **84.3%** | Representasi realistis pada skala deteksi luas. |
-| **Overall Recall** | **95.4%** | 95.4% fraud tertangkap setelah normalisasi fairness. |
-| **P1 Recall (Obat)** | **94.5%** | Deteksi *drug shopping* lintas wilayah. |
-| **P2 Recall (Qty Obat)** | **95.0%** | Deteksi klaim berlebihan dengan toleransi batas aman. |
-| **P3 Recall (Layanan)** | **100%** | Deteksi pola kunjungan poli duplikat berulang. |
-| **P4 Recall (Identitas)** | **88.7%** | Deteksi geo-time conflict 2 provinsi. |
-| **Decoy False Positive** | **2.8%** | Pasien kronis sah tidak sembarangan terblokir. |
+Di mode database, keputusan + catatan tersimpan di tabel `kartu_kasus` dan `investigasi_log` (jejak audit). Di mode CSV, keputusan tersimpan di browser dan dapat diekspor lewat tombol **⬇ Ekspor keputusan**.
 
----
+## 📁 Struktur
 
-## ⚖️ Kepatuhan Regulasi & Etika
-- **Permenkes No. 16 Tahun 2019**: **Tidak ada pemblokiran otomatis**. Semua hasil deteksi bersifat rekomendasi audit untuk petugas manusia (*Human-in-the-loop*).
-- **UU PDP No. 27 Tahun 2022**: Identitas peserta dilindungi menggunakan **Pseudonimisasi Hashing SHA-256**.
-- **Audit-Ready**: Setiap aksi verifikator tercatat waktu, identitas, dan catatannya di log investigasi.
+```
+sentinel_prototype.py   # generator data sintetis + fitur + model + evaluasi + kartu kasus
+requirements.txt
+kartu_kasus.csv         # antrean telaah (output)
+results.json            # SATU-SATUNYA sumber metrik untuk dashboard
+dashboard/              # index.html · app.js · style.css (responsif, tanpa angka hardcode)
+backend/                # PHP + MySQL opsional: cases, stats, verify, import, chat (proxy Gemini)
+```
+
+## 📊 Hasil evaluasi (data sintetis, seed 2026)
+
+Nilai persisnya selalu dibaca dari `results.json`; tabel ini hanya cuplikan run 31 Okt 2026.
+
+| Metrik | Nilai | Catatan |
+|---|---|---|
+| Peserta · fraud tertanam · decoy | 20.000 · 540 (2,7%) · 900 | decoy = pasien sah yang mirip fraud |
+| **Precision@100 / @300** | **100% / 100%** | kasus teratas bersih |
+| **Precision@600** (kapasitas 3%) | **87,7%** | 526 benar, 74 bukan fraud |
+| **Recall@600** | **97,4%** | |
+| Lift vs acak | 32,5× | baseline = prevalensi 2,7% |
+| ROC-AUC · PR-AUC | 0,990 · 0,977 | skor final |
+| Recall per pola | P1 100% · P2 100% · P3 100% · **P4 82,5%** | P4 terendah: sebagian kasus sengaja borderline |
+| Akurasi kategori (role tujuan sesuai pola) | ≈ 95% | |
+| Flag pasien kronis non-fraud | 1,39% → 0,37% | setelah normalisasi per kelompok |
+| Decoy ter-flag | 8,11% → 2,22% | |
+| Pembanding blokir otomatis (n_faskes ≥ 2) | recall hanya 51,7%, ±46 peserta sah terblokir | alasan tidak dipakai |
+
+**Sensitivitas prevalensi** (precision antrean pada ambang yang sama): 2,7% → 87,7% · 1% → 72,1% · 0,5% → 56,3% · 0,2% → 33,9%. Bila fraud riil lebih jarang, ambang dan K harus dikalibrasi saat pilot.
+
+### Cara membaca Precision@K dengan benar
+* Precision@K = dari K kasus teratas, berapa yang benar-benar fraud. Cocok karena verifikator punya kapasitas terbatas.
+* Nilainya bergantung pada prevalensi dan definisi label. Di sini keduanya dibuat tim, sehingga **tidak berlaku umum** di data riil.
+* Karena itu dashboard menampilkan lift vs acak, PR-AUC, sensitivitas prevalensi, dan **precision terverifikasi** dari keputusan petugas sebagai pengganti saat pilot.
+
+## ⚖️ Etika & kepatuhan
+* **Tanpa blokir otomatis** — hanya rekomendasi telaah (human-in-the-loop); tombol *Flag Salah* mengembalikan umpan balik.
+* **Pseudonimisasi SHA-256 + salt**; mekanisme buka-identitas bagi verifikator berwenang **belum** diimplementasi dan salt demo wajib diganti di produksi.
+* Setiap keputusan mencatat waktu, peran, dan catatan (log audit di mode database).
+* Fitur *fairness*: skor anomali dinormalisasi per kelompok (kronis diamati dari ICD-10 × usia) agar pasien kronis/lansia tidak terdiskriminasi.
+* Chat AI (Gemini): di mode CSV kunci API disimpan di browser (cukup untuk demo); untuk produksi gunakan mode backend (proxy PHP).
+
+## 🚧 Batasan & langkah berikutnya
+1. Pilot dengan data JKN riil (MoU, izin etik) untuk mengukur precision sebenarnya.
+2. Kalibrasi ambang & K pada prevalensi riil; pantau precision terverifikasi.
+3. Mekanisme buka-identitas terotorisasi, manajemen salt, autentikasi petugas.
+4. SOP telaah formal dan pengukuran waktu telaah per kasus.

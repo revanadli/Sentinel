@@ -54,11 +54,12 @@ Kamu adalah Sentinel AI, asisten investigasi fraud klaim JKN (BPJS Kesehatan).
 
 Konteks database saat ini:
 - Total kasus terdeteksi: {$statsRow['total']}
-- Fraud ground truth: {$statsRow['fraud']}
-- Total biaya tagih: Rp {$statsRow['biaya']}
+- Label benar-fraud (hanya data sintetis): {$statsRow['fraud']}
+- Total biaya tagih kasus terdeteksi: Rp {$statsRow['biaya']}
 
-Metode deteksi: Rules (4 threshold) + IsolationForest (unsupervised ML)
-Pola fraud: P1=Drug shopping, P2=Qty berlebihan, P3=Duplikasi layanan, P4=Identity fraud
+Metode deteksi: 5 rule threshold + IsolationForest (unsupervised ML), skor dinormalisasi per kelompok kronis x usia
+Pola: P1=Drug shopping, P2=Kuantitas/tebus dini, P3=Layanan berulang, P4=Identitas lintas wilayah, AN=Anomali ML
+Data prototipe bersifat SINTETIS, bukan data JKN riil. Temuan = 'perlu verifikasi', bukan 'terbukti curang'.
 
 Prinsip sistem:
 - TIDAK ada blokir otomatis — semua keputusan di tangan verifikator manusia

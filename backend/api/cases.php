@@ -5,8 +5,8 @@
  *
  * Query params:
  *   page      int   (default 1)
- *   per_page  int   (default 20, max 100)
- *   tipe      str   P1|P2|P3|P4|'' 
+ *   per_page  int   (default 20, max 5000)
+ *   tipe      str   P1|P2|P3|P4|AN|'' (pola hasil rule)
  *   status    str   pending|in_review|verified_fraud|cleared|escalated
  *   label     int   0|1
  *   q         str   search text (id_pseudonim, kode_obat, diagnosis, provinsi)
@@ -22,10 +22,10 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
 }
 
 $page     = max(1, (int)($_GET['page']     ?? 1));
-$per_page = min(100, max(1, (int)($_GET['per_page'] ?? 20)));
+$per_page = min(5000, max(1, (int)($_GET['per_page'] ?? 20)));
 $offset   = ($page - 1) * $per_page;
 
-$allowed_sort  = ['skor', 'jumlah_kunjungan', 'total_biaya_tagih', 'imported_at'];
+$allowed_sort  = ['skor', 'peringkat', 'jumlah_kunjungan', 'total_biaya_tagih', 'potensi_kerugian', 'imported_at'];
 $allowed_order = ['desc', 'asc'];
 
 $sort  = in_array($_GET['sort']  ?? '', $allowed_sort,  true) ? $_GET['sort']  : 'skor';
@@ -36,7 +36,7 @@ $where  = ['1=1'];
 $params = [];
 
 if (!empty($_GET['tipe'])) {
-    $where[]    = 'tipe_fraud = :tipe';
+    $where[]    = 'pola_terdeteksi = :tipe';
     $params[':tipe'] = $_GET['tipe'];
 }
 if (isset($_GET['status']) && $_GET['status'] !== '') {
@@ -65,13 +65,15 @@ $countStmt->execute($params);
 $total = (int)$countStmt->fetchColumn();
 
 // Data
-$dataSql  = "SELECT id, id_pseudonim, jenis_dugaan, tipe_fraud, waktu_kejadian,
-                    provinsi_terlibat, kode_obat_fkl44, kode_diagnosis,
-                    jumlah_kunjungan, total_biaya_tagih, skor,
-                    label_sintetis, status, diverifikasi_at
+$dataSql  = "SELECT id, id_pseudonim, peringkat, prioritas, pola_terdeteksi, jenis_dugaan, role_target,
+                    tipe_fraud, waktu_kejadian, provinsi_terlibat, faskes_terlibat, kode_obat_fkl44,
+                    kode_diagnosis, tgl_terima_obat, alasan_flag, jumlah_kunjungan, total_biaya_tagih,
+                    potensi_kerugian, skor, n_faskes_30d, qty_ratio, gap_days, repeat_svc_60d,
+                    dx_norm_z, geo_time_conflict, use_vs_self, label_sintetis, status,
+                    catatan_verif, diverifikasi_oleh, diverifikasi_at
              FROM kartu_kasus
              WHERE $whereSql
-             ORDER BY $sort $order
+             ORDER BY $sort $order, id ASC
              LIMIT :limit OFFSET :offset";
 
 $stmt = $pdo->prepare($dataSql);
@@ -87,7 +89,10 @@ $rows = $stmt->fetchAll();
 foreach ($rows as &$r) {
     $r['jumlah_kunjungan']  = (int)$r['jumlah_kunjungan'];
     $r['total_biaya_tagih'] = (int)$r['total_biaya_tagih'];
+    $r['potensi_kerugian']  = (int)$r['potensi_kerugian'];
+    $r['peringkat']         = (int)$r['peringkat'];
     $r['skor']              = (float)$r['skor'];
+    foreach (['n_faskes_30d','qty_ratio','gap_days','repeat_svc_60d','dx_norm_z','geo_time_conflict','use_vs_self'] as $f) $r[$f] = (float)$r[$f];
     $r['label_sintetis']    = (int)$r['label_sintetis'];
 }
 
