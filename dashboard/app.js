@@ -1,3 +1,15 @@
+// ── SIDEBAR MOBILE TOGGLE ─────────────────────────────────────
+function toggleSidebar() {
+  document.querySelector(".sidebar").classList.toggle("open");
+}
+document.addEventListener("click", (e) => {
+  const sidebar = document.querySelector(".sidebar");
+  const toggle  = document.getElementById("menu-toggle");
+  if (window.innerWidth <= 960 && sidebar && !sidebar.contains(e.target) && e.target !== toggle && !toggle?.contains(e.target)) {
+    sidebar.classList.remove("open");
+  }
+});
+
 'use strict';
 
 // ─────────────────────────────────────────
@@ -71,6 +83,12 @@ function fmtProvs(str) {
 // ─────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   loadSettings();
+  const hash = (location.hash || '').replace('#', '');
+  if (hash && ['overview', 'alur', 'cases', 'model', 'ai'].includes(hash)) {
+    showSection(hash);
+  }
+  const tbody = document.getElementById('cases-tbody');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:2.5rem;color:var(--muted);font-size:.82rem">⏳ Memuat data kartu kasus...</td></tr>';
   autoDetect().then(() => loadAllData());
 });
 
@@ -110,9 +128,8 @@ async function loadAllData() {
       await loadCSV();
       loadFlagsFromStorage();   // restore flag salah dari localStorage
     }
-    S.filtered = applyRoleFilter([...S.cases]);
     renderOverview();
-    renderTable();
+    filterTable();
     renderModelSection();
     updateCtxStats();
     document.getElementById('badge-mode').textContent =
@@ -309,7 +326,12 @@ function renderTable() {
   const start = (page-1)*pageSize;
   const rows  = filtered.slice(start, start+pageSize);
   const tbody = document.getElementById('cases-tbody');
-
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:3rem 1.5rem;color:var(--muted)"><div style="font-size:2.2rem;margin-bottom:.5rem">📋</div><div style="font-weight:600;font-size:.9rem;color:var(--text);margin-bottom:.3rem">Tidak ada kartu kasus yang ditemukan</div><div style="font-size:.78rem;color:var(--dim);margin-bottom:.8rem">Coba reset filter tipe, role, atau kata kunci pencarian.</div><button onclick="resetFilter()" style="background:var(--accent-lt);border:1px solid var(--accent-bdr);color:var(--accent);font-size:.78rem;font-weight:600;padding:.4rem .9rem;border-radius:6px;cursor:pointer">↺ Reset Semua Filter</button></td></tr>';
+    setText('table-count', '0 baris');
+    renderPagination();
+    return;
+  }
   tbody.innerHTML = rows.map((c,i) => {
     const t      = c.tipe_fraud || 'unk';
     const risk   = riskLevel(c.skor);
@@ -411,7 +433,7 @@ function openDetail(idx) {
         <label>⚠️ Penjelasan Alasan Flag (Bahasa Manusia)</label>
         <div style="margin-top:.4rem;display:flex;flex-direction:column;gap:.35rem">
           ${alasan.length
-            ? alasan.map(a=>`<div style="background:rgba(239,68,68,.08);border-left:3px solid #ef4444;padding:.4rem .6rem;border-radius:4px;font-size:.8rem;color:#fca5a5;">• ${a}</div>`).join('')
+            ? alasan.map(a=>`<div style="background:#fef2f2;border-left:3px solid #ef4444;padding:.4rem .6rem;border-radius:4px;font-size:.8rem;color:#b91c1c;">• ${a}</div>`).join('')
             : '<div style="color:var(--muted);font-size:.8rem">Anomali kombinasi multidimensi oleh IsolationForest (tidak ada single rule yang tembus batas ekstrim).</div>'}
         </div>
       </div>
@@ -469,6 +491,10 @@ function updateCaseStatus(newStatus, catatanMsg, successMsg) {
     closeCaseModal();
     setStatus('✓ ' + successMsg + ' (tersimpan di browser)');
   }
+}
+
+function setPending() {
+  updateCaseStatus('pending', 'Status dikembalikan ke Pending oleh ' + S.role, 'Status kasus dikembalikan ke: Pending');
 }
 
 function flagSalah() {
@@ -649,7 +675,7 @@ async function sendChat() {
     } else {
       S.chatHistory.push({role:'user',parts:[{text:msg}]});
       const r = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${S.geminiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${S.geminiKey}`,
         {method:'POST',headers:{'Content-Type':'application/json'},
          body:JSON.stringify({system_instruction:{parts:[{text:buildSysPrompt()}]},contents:S.chatHistory,
            generationConfig:{temperature:.7,topK:40,topP:.95,maxOutputTokens:1024}})}
@@ -735,9 +761,11 @@ function showSection(name, el) {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
   document.getElementById(`section-${name}`)?.classList.add('active');
-  if (el) el.classList.add('active');
+  const navEl = el || document.querySelector(`.sidebar-nav .nav-item[onclick*="${name}"]`);
+  if (navEl) navEl.classList.add('active');
   const titles = {overview:'Overview',alur:'Alur Sistem',cases:'Kartu Kasus',model:'Performa Model',ai:'AI Investigator'};
   setText('page-title', titles[name]||name);
+  try { history.replaceState(null, '', '#' + name); } catch(_) {}
 }
 
 // ─────────────────────────────────────────
@@ -806,9 +834,69 @@ function mkChart(id, type, data, opts) {
 // ─────────────────────────────────────────
 // DATA FETCH
 // ─────────────────────────────────────────
-async function fetchJSON(url) { const r=await fetch(url); if(!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }
-function fetchCSV(url) {
-  return new Promise((res,rej)=>Papa.parse(url,{download:true,header:true,skipEmptyLines:true,complete:r=>res(r.data),error:e=>rej(e)}));
+async function fetchJSON(url) {
+  const basename = url.split('/').pop();
+  const paths = [...new Set([url, S.dataPath + basename, '../' + basename, './' + basename, '/' + basename, basename])];
+  for (const p of paths) {
+    try {
+      const r = await fetch(p);
+      if (r.ok) return await r.json();
+    } catch(_) {}
+  }
+  return null;
+}
+async function fetchCSV(targetPath) {
+  const filename = 'kartu_kasus.csv';
+  const paths = [...new Set([
+    targetPath,
+    S.dataPath + filename,
+    '../' + filename,
+    './' + filename,
+    '/' + filename,
+    filename
+  ])];
+
+  let rawText = null;
+  for (const p of paths) {
+    try {
+      const res = await fetch(p);
+      if (res.ok) {
+        const text = await res.text();
+        if (text && text.includes('id_pseudonim')) {
+          rawText = text;
+          break;
+        }
+      }
+    } catch (_) {}
+  }
+
+  if (!rawText) {
+    throw new Error('File kartu_kasus.csv tidak dapat diunduh dari server.');
+  }
+
+  // Parse CSV: gunakan PapaParse jika ada, atau fallback parser bawaan
+  if (typeof Papa !== 'undefined' && Papa.parse) {
+    const parsed = Papa.parse(rawText, { header: true, skipEmptyLines: true });
+    if (parsed.data && parsed.data.length > 0) {
+      return parsed.data;
+    }
+  }
+
+  // Fallback parsing mandiri tanpa dependensi luar
+  const lines = rawText.trim().split(/\r?\n/);
+  const headers = lines[0].split(',').map(h => h.trim());
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+    const vals = line.split(',');
+    const row = {};
+    headers.forEach((h, idx) => {
+      row[h] = vals[idx] !== undefined ? vals[idx].trim() : '';
+    });
+    rows.push(row);
+  }
+  return rows;
 }
 
 // ─────────────────────────────────────────
@@ -832,4 +920,16 @@ function md2html(md){
     .replace(/(<li.*<\/li>)/gs,'<ul style="padding-left:1.1rem;margin:.35rem 0">$1</ul>')
     .replace(/\n\n/g,'</p><p style="margin:.4rem 0">')
     .replace(/\n/g,'<br/>');
+}
+
+
+function resetFilter() {
+  const inp = document.getElementById('search-input'); if (inp) inp.value = '';
+  const ft = document.getElementById('filter-type'); if (ft) ft.value = '';
+  const fr = document.getElementById('filter-role'); if (fr) fr.value = '';
+  const fs = document.getElementById('filter-status'); if (fs) fs.value = '';
+  S.role = 'verifikator';
+  document.querySelectorAll('.role-btn').forEach((b,i) => b.classList.toggle('active', i === 0));
+  setText('role-indicator', '🏢 Verifikator');
+  filterTable();
 }

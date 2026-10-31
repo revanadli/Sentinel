@@ -6,9 +6,10 @@
   <title>JKN Sentinel — Dashboard</title>
   <meta name="description" content="Sistem deteksi fraud klaim JKN — Healthkathon 2026"/>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <link rel="stylesheet" href="style.css"/>
+  <script src="chart.umd.min.js"></script>
+  <script src="papaparse.min.js"></script>
+  <link rel="stylesheet" href="style.css?v=20261031_1"/>
+  <meta name="color-scheme" content="light only"/>
 </head>
 <body>
 
@@ -60,7 +61,7 @@
 
   <!-- TOPBAR -->
   <header class="topbar">
-    <div class="topbar-left">
+    <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">&#9776;</button><div class="topbar-left">
       <h1 id="page-title">Overview</h1>
       <span class="badge-mode" id="badge-mode">● Data</span>
       <span class="badge-mode" id="badge-ts" style="background:rgba(34,211,238,.12);color:#22d3ee;margin-left:.4rem"></span>
@@ -576,6 +577,7 @@
     <div class="modal-body" id="case-modal-body"></div>
     <div class="modal-footer">
       <div class="modal-footer-left">
+        <button class="btn-pending" onclick="setPending()" title="Kembalikan status kasus menjadi Pending">🕐 Pending</button>
         <button class="btn-flag" onclick="flagSalah()" title="Tandai kasus ini sah / bukan fraud">✅ Flag Salah (Bukan Fraud)</button>
         <button class="btn-verify-fraud" onclick="confirmFraud()" title="Konfirmasi kasus ini sebagai fraud resmi">🚨 Konfirmasi Fraud</button>
         <button class="btn-escalate" onclick="escalateCase()" title="Eskalasi ke Komite Audit / Manajemen">⬆️ Eskalasi Audit</button>
@@ -586,6 +588,6 @@
   </div>
 </div>
 
-<script src="app.js"></script>
+<script src="app.js?v=20261031_1"></script>
 </body>
 </html>

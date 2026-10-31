@@ -92,6 +92,6 @@ CREATE TABLE IF NOT EXISTS settings (
 INSERT IGNORE INTO settings (`key`, `value`) VALUES
   ('threshold_skor',    '1.5'),
   ('top_k_review',      '100'),
-  ('gemini_model',      'gemini-2.0-flash-exp'),
+  ('gemini_model',      'gemini-3.5-flash'),
   ('app_version',       '1.0.0-healthkathon2026');
 

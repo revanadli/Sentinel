@@ -35,7 +35,7 @@ define('DB_CHARSET', 'utf8mb4');
 
 // ── Gemini ──
 define('GEMINI_API_KEY_DEFAULT', env('GEMINI_API_KEY', ''));
-define('GEMINI_MODEL',           env('GEMINI_MODEL',   'gemini-2.0-flash-exp'));
+define('GEMINI_MODEL',           env('GEMINI_MODEL',   'gemini-3.5-flash'));
 
 // ── App ──
 define('APP_ENV',   env('APP_ENV',   'local'));
