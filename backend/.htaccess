@@ -1,0 +1,11 @@
+# Proteksi file sensitif di backend/
+# XAMPP/Apache: blokir akses langsung ke .env dan config
+<FilesMatch "(\.env|config\.php|schema\.sql)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Aktifkan CORS hanya dari localhost
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "DENY"
+

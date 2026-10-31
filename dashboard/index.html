@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JKN Sentinel — Dashboard</title>
+  <meta name="description" content="Sistem deteksi fraud klaim JKN — Healthkathon 2026"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ═══════════════════ SIDEBAR ═══════════════════ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🛡️</div>
+    <div>
+      <div class="logo-title">JKN Sentinel</div>
+      <div class="logo-sub">Healthkathon 2026</div>
+    </div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a class="nav-item active" onclick="showSection('overview',this)">
+      <span class="nav-icon">📊</span> Overview
+    </a>
+    <a class="nav-item" onclick="showSection('alur',this)">
+      <span class="nav-icon">🔄</span> Alur Sistem
+    </a>
+    <a class="nav-item" onclick="showSection('cases',this)">
+      <span class="nav-icon">📋</span> Kartu Kasus
+    </a>
+    <a class="nav-item" onclick="showSection('model',this)">
+      <span class="nav-icon">🤖</span> Performa Model
+    </a>
+    <a class="nav-item" onclick="showSection('ai',this)">
+      <span class="nav-icon">✨</span> AI Investigator
+    </a>
+  </nav>
+
+  <!-- Role switcher -->
+  <div class="role-switcher">
+    <div class="role-label">Mode Tampilan</div>
+    <div class="role-btns">
+      <button class="role-btn active" onclick="setRole('verifikator',this)" title="Verifikator BPJS — lihat semua kasus">🏢 Verifikator</button>
+      <button class="role-btn" onclick="setRole('apoteker',this)" title="Apoteker — fokus obat P1/P2">💊 Apoteker</button>
+      <button class="role-btn" onclick="setRole('dokter',this)" title="Dokter — fokus layanan P3">🩺 Dokter</button>
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="btn-settings" onclick="toggleSettings()">⚙️ Pengaturan</button>
+  </div>
+</aside>
+
+<!-- ═══════════════════ MAIN ═══════════════════ -->
+<main class="main-content">
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="page-title">Overview</h1>
+      <span class="badge-mode" id="badge-mode">● Data</span>
+      <span class="badge-mode" id="badge-ts" style="background:rgba(34,211,238,.12);color:#22d3ee;margin-left:.4rem"></span>
+    </div>
+    <div class="topbar-right">
+      <div class="role-indicator" id="role-indicator">🏢 Verifikator</div>
+      <div class="data-status" id="data-status">Memuat...</div>
+      <button class="btn-import" id="btn-import" style="display:none" onclick="importToDB()">⬆ Import DB</button>
+      <button class="btn-reload" onclick="loadAllData()" title="Refresh">↺</button>
+    </div>
+  </header>
+
+  <!-- ══════ SECTION: OVERVIEW ══════ -->
+  <section id="section-overview" class="section active">
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card red">
+        <div class="kpi-icon">🚨</div>
+        <div class="kpi-value" id="kpi-flagged">—</div>
+        <div class="kpi-label">Kasus Terdeteksi</div>
+        <div class="kpi-sub" id="kpi-sub-flagged">dari 20.000 peserta</div>
+      </div>
+      <div class="kpi-card amber">
+        <div class="kpi-icon">💊</div>
+        <div class="kpi-value" id="kpi-obat">—</div>
+        <div class="kpi-label">Fraud Obat (P1+P2)</div>
+        <div class="kpi-sub">Penyalahgunaan obat/alkes</div>
+      </div>
+      <div class="kpi-card cyan">
+        <div class="kpi-icon">🏥</div>
+        <div class="kpi-value" id="kpi-layanan">—</div>
+        <div class="kpi-label">Fraud Layanan (P3)</div>
+        <div class="kpi-sub">Pelayanan tidak perlu</div>
+      </div>
+      <div class="kpi-card purple">
+        <div class="kpi-icon">🪪</div>
+        <div class="kpi-value" id="kpi-identitas">—</div>
+        <div class="kpi-label">Fraud Identitas (P4)</div>
+        <div class="kpi-sub">Penyalahgunaan identitas</div>
+      </div>
+    </div>
+
+    <!-- Metrik baris ke-2 -->
+    <div class="kpi-grid kpi-grid-3">
+      <div class="kpi-card green">
+        <div class="kpi-icon">🎯</div>
+        <div class="kpi-value" id="kpi-precision">—</div>
+        <div class="kpi-label">Precision@100</div>
+        <div class="kpi-sub">tanpa false positive</div>
+      </div>
+      <div class="kpi-card blue">
+        <div class="kpi-icon">📡</div>
+        <div class="kpi-value" id="kpi-recall">—</div>
+        <div class="kpi-label">Recall (all fraud)</div>
+        <div class="kpi-sub">setelah fairness mitigation</div>
+      </div>
+      <div class="kpi-card dark">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-value" id="kpi-biaya">—</div>
+        <div class="kpi-label">Total Biaya Tagih</div>
+        <div class="kpi-sub">kasus terdeteksi</div>
+      </div>
+    </div>
+
+    <!-- Charts baris 1 -->
+    <div class="charts-row">
+      <div class="chart-card wide">
+        <div class="chart-header">
+          <h3>Distribusi 3 Sub-Kategori Fraud</h3>
+          <div class="legend-row">
+            <span class="dot red"></span> Obat
+            <span class="dot amber"></span> Layanan
+            <span class="dot purple"></span> Identitas
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="chartFraudType"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><h3>Sebaran Provinsi</h3></div>
+        <div class="chart-wrap"><canvas id="chartProv"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="chart-card full">
+      <div class="chart-header">
+        <h3>Timeline Kejadian per 10 Hari (180 hari observasi)</h3>
+        <span class="chip">Jendela 30/60/90 hari sesuai Permenkes 16/2019</span>
+      </div>
+      <div class="chart-wrap tall"><canvas id="chartTimeline"></canvas></div>
+    </div>
+
+  </section>
+
+  <!-- ══════ SECTION: ALUR SISTEM ══════ -->
+  <section id="section-alur" class="section">
+    <div class="alur-header">
+      <h2>Alur Proses JKN Sentinel</h2>
+      <p>Input → Proses → Analisis AI → Output → Tindak Lanjut</p>
+    </div>
+
+    <div class="alur-steps">
+      <div class="alur-step">
+        <div class="step-num">1</div>
+        <div class="step-icon">📥</div>
+        <div class="step-title">Input Data</div>
+        <div class="step-desc">
+          Data kunjungan FKTP & FKRTL dari BPJS<br/>
+          <span class="step-tag">PESERTA · FKTP · FKRTL</span><br/>
+          <span class="step-note">Sintetis di prototype; produksi via MoU & izin resmi</span>
+        </div>
+      </div>
+      <div class="alur-arrow">→</div>
+      <div class="alur-step">
+        <div class="step-num">2</div>
+        <div class="step-icon">🔐</div>
+        <div class="step-title">Ingest + Pseudonim</div>
+        <div class="step-desc">
+          Validasi skema BPJS<br/>
+          SHA-256 hash ID peserta<br/>
+          <span class="step-tag">UU PDP 27/2022</span>
+        </div>
+      </div>
+      <div class="alur-arrow">→</div>
+      <div class="alur-step">
+        <div class="step-num">3</div>
+        <div class="step-icon">⚙️</div>
+        <div class="step-title">Rekayasa Fitur</div>
+        <div class="step-desc">
+          7 fitur lintas faskes<br/>
+          Jendela 30/60/90 hari<br/>
+          <span class="step-tag">n_faskes · qty · gap_days · geo</span>
+        </div>
+      </div>
+      <div class="alur-arrow">→</div>
+      <div class="alur-step">
+        <div class="step-num">4</div>
+        <div class="step-icon">🤖</div>
+        <div class="step-title">Mesin Deteksi</div>
+        <div class="step-desc">
+          Rules threshold → alasan<br/>
+          IsolationForest → anomali<br/>
+          Fairness per kronis×usia
+        </div>
+      </div>
+      <div class="alur-arrow">→</div>
+      <div class="alur-step">
+        <div class="step-num">5</div>
+        <div class="step-icon">📋</div>
+        <div class="step-title">Dashboard Output</div>
+        <div class="step-desc">
+          Antrean kasus + alasan flag<br/>
+          Role: Apoteker/Dokter/Verifikator<br/>
+          <span class="step-tag">Permenkes 16/2019</span>
+        </div>
+      </div>
+      <div class="alur-arrow">→</div>
+      <div class="alur-step highlight">
+        <div class="step-num">6</div>
+        <div class="step-icon">👤</div>
+        <div class="step-title">Keputusan Manusia</div>
+        <div class="step-desc">
+          Konfirmasi / Abaikan / Eskalasi<br/>
+          Tombol "Flag Salah"<br/>
+          <strong>Tidak ada blokir otomatis</strong>
+        </div>
+      </div>
+      <div class="alur-arrow">→</div>
+      <div class="alur-step">
+        <div class="step-num">7</div>
+        <div class="step-icon">🔁</div>
+        <div class="step-title">Feedback Loop</div>
+        <div class="step-desc">
+          Label hasil verifikasi<br/>
+          Retraining berkala<br/>
+          Laporan precision@K
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 Masalah Utama -->
+    <div class="masalah-grid">
+      <div class="masalah-card obat">
+        <div class="masalah-icon">💊</div>
+        <div class="masalah-title">Penyalahgunaan Obat/Alkes</div>
+        <div class="masalah-desc">Obat sama ditebus di banyak faskes dalam waktu berdekatan, atau melebihi kebutuhan 30 hari</div>
+        <div class="masalah-signals">
+          <span class="signal-chip">n_faskes_30d ≥ 3</span>
+          <span class="signal-chip">qty_ratio ≥ 3×</span>
+          <span class="signal-chip">gap_days ≤ 0.4</span>
+        </div>
+        <div class="masalah-role">→ Dikonfirmasi oleh <strong>Apoteker</strong></div>
+        <div class="masalah-stats">P1: <span id="m-p1">—</span> kasus · P2: <span id="m-p2">—</span> kasus</div>
+      </div>
+      <div class="masalah-card layanan">
+        <div class="masalah-icon">🏥</div>
+        <div class="masalah-title">Pelayanan yang Tidak Perlu</div>
+        <div class="masalah-desc">Rujukan/lab sama berulang lintas faskes tanpa perubahan diagnosis; dibandingkan norma per diagnosis</div>
+        <div class="masalah-signals">
+          <span class="signal-chip">repeat_svc_60d ≥ 6</span>
+          <span class="signal-chip">dx_norm_z tinggi</span>
+        </div>
+        <div class="masalah-role">→ Dikonfirmasi oleh <strong>Dokter</strong></div>
+        <div class="masalah-stats">P3: <span id="m-p3">—</span> kasus</div>
+      </div>
+      <div class="masalah-card identitas">
+        <div class="masalah-icon">🪪</div>
+        <div class="masalah-title">Penyalahgunaan Identitas</div>
+        <div class="masalah-desc">Satu NIK terpakai di wilayah berjauhan pada hari berdekatan, atau lonjakan mendadak vs riwayat sendiri</div>
+        <div class="masalah-signals">
+          <span class="signal-chip">geo_time_conflict ≥ 1</span>
+          <span class="signal-chip">use_vs_self tinggi</span>
+        </div>
+        <div class="masalah-role">→ Ditelaah oleh <strong>Verifikator BPJS</strong></div>
+        <div class="masalah-stats">P4: <span id="m-p4">—</span> kasus</div>
+      </div>
+    </div>
+
+    <!-- Fairness note -->
+    <div class="fairness-banner">
+      <span class="fairness-icon">⚖️</span>
+      <div>
+        <strong>Prinsip Fairness:</strong> Skor anomali dinormalisasi per kelompok (kronis × usia bracket) — pasien lansia/kronis yang memang sering berobat tidak didiskriminasi. Laju flag kronis: 2.26% → 1.10% setelah mitigasi.
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SECTION: KARTU KASUS ══════ -->
+  <section id="section-cases" class="section">
+    <div class="table-toolbar">
+      <div class="search-box">
+        <span>🔍</span>
+        <input type="text" id="search-input" placeholder="Cari ID, kode obat, diagnosis, provinsi..." oninput="filterTable()"/>
+      </div>
+      <div class="filter-group">
+        <select id="filter-type" onchange="filterTable()">
+          <option value="">Semua Tipe</option>
+          <option value="P1">P1 – Drug Shopping</option>
+          <option value="P2">P2 – Qty Berlebih</option>
+          <option value="P3">P3 – Dup. Layanan</option>
+          <option value="P4">P4 – Identity Fraud</option>
+        </select>
+        <select id="filter-role" onchange="filterTable()">
+          <option value="">Semua Role</option>
+          <option value="Apoteker">Apoteker</option>
+          <option value="Dokter">Dokter</option>
+          <option value="Verifikator">Verifikator</option>
+        </select>
+        <select id="filter-status" onchange="filterTable()">
+          <option value="">Semua Status</option>
+          <option value="pending">Pending</option>
+          <option value="in_review">Ditinjau</option>
+          <option value="verified_fraud">Terverifikasi Fraud</option>
+          <option value="cleared">Bersih</option>
+          <option value="escalated">Eskalasi</option>
+        </select>
+      </div>
+      <div class="table-count" id="table-count">—</div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="cases-table">
+        <thead>
+          <tr>
+            <th>ID Pseudonim</th>
+            <th>Sub-Kategori</th>
+            <th>Tipe</th>
+            <th>Alasan Flag</th>
+            <th>Role</th>
+            <th>Provinsi</th>
+            <th>Kunjungan</th>
+            <th>Biaya Tagih</th>
+            <th>Skor</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="cases-tbody"></tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </section>
+
+  <!-- ══════ SECTION: PERFORMA MODEL ══════ -->
+  <section id="section-model" class="section">
+    <div class="charts-row">
+      <div class="chart-card wide">
+        <div class="chart-header">
+          <h3>Precision@K — Rules vs IsolationForest vs Gabungan</h3>
+          <div class="legend-row">
+            <span class="dot indigo"></span> Rules
+            <span class="dot cyan"></span> IsolationForest
+            <span class="dot amber"></span> Gabungan
+          </div>
+        </div>
+        <div class="chart-wrap tall"><canvas id="chartModelPrec"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><h3>Recall per Sub-Kategori</h3></div>
+        <div class="chart-wrap tall"><canvas id="chartRecallType"></canvas></div>
+      </div>
+    </div>
+
+    <div class="fairness-grid">
+      <div class="fairness-card">
+        <h3>Sebelum Fairness</h3>
+        <div class="fairness-row"><span>Recall Fraud</span><span id="f-recall-before" class="fval">—</span></div>
+        <div class="fairness-row warn"><span>Flag Kronis (%)</span><span id="f-kronis-before" class="fval warn">—</span></div>
+        <div class="fairness-row"><span>Flag Non-Kronis (%)</span><span id="f-nk-before" class="fval">—</span></div>
+        <div class="fairness-row warn"><span>Decoy ter-flag (%)</span><span id="f-decoy-before" class="fval warn">—</span></div>
+      </div>
+      <div class="fairness-card highlight">
+        <h3>✅ Setelah Fairness Mitigation</h3>
+        <div class="fairness-row"><span>Recall Fraud</span><span id="f-recall-after" class="fval green">—</span></div>
+        <div class="fairness-row"><span>Flag Kronis (%)</span><span id="f-kronis-after" class="fval">—</span></div>
+        <div class="fairness-row"><span>Flag Non-Kronis (%)</span><span id="f-nk-after" class="fval">—</span></div>
+        <div class="fairness-row"><span>Decoy ter-flag (%)</span><span id="f-decoy-after" class="fval">—</span></div>
+      </div>
+      <div class="fairness-card warn-card">
+        <h3>⚠️ Hard-Stop (tidak dipakai)</h3>
+        <div class="fairness-row warn"><span>Peserta Diblokir</span><span id="hs-diblokir" class="fval warn">—</span></div>
+        <div class="fairness-row warn"><span>Precision</span><span id="hs-prec" class="fval warn">—</span></div>
+        <div class="fairness-row"><span>Recall</span><span id="hs-recall" class="fval">—</span></div>
+        <div class="fairness-row warn"><span>Decoy Diblokir</span><span id="hs-decoy" class="fval red">—</span></div>
+        <div class="hs-note">Keputusan ada di manusia — tidak ada blokir otomatis (Permenkes 16/2019 Pasal 6)</div>
+      </div>
+    </div>
+
+    <!-- Metrik Ringkasan per Sub-Kategori -->
+    <div class="features-card" style="margin-top:1.2rem">
+      <h3>📊 Ringkasan Metrik Deteksi (Data Sintetis 20.000 Peserta)</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.8rem;margin-top:.8rem">
+        <div class="feat-item" style="text-align:center;padding:1rem .8rem">
+          <div style="font-size:1.5rem;font-weight:700;color:#f59e0b" id="m-prec100">—</div>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Precision@100</div>
+          <div style="font-size:.65rem;color:var(--muted)">top 100 kasus</div>
+        </div>
+        <div class="feat-item" style="text-align:center;padding:1rem .8rem">
+          <div style="font-size:1.5rem;font-weight:700;color:#22d3ee" id="m-recall-all">—</div>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Overall Recall</div>
+          <div style="font-size:.65rem;color:var(--muted)">setelah fairness</div>
+        </div>
+        <div class="feat-item obat" style="text-align:center;padding:1rem .8rem">
+          <div style="font-size:1.5rem;font-weight:700;color:#f59e0b" id="m-rec-p1p2">—</div>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Recall P1+P2</div>
+          <div style="font-size:.65rem;color:var(--muted)">💊 Penyalahgunaan Obat</div>
+        </div>
+        <div class="feat-item layanan" style="text-align:center;padding:1rem .8rem">
+          <div style="font-size:1.5rem;font-weight:700;color:#22d3ee" id="m-rec-p3">—</div>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Recall P3</div>
+          <div style="font-size:.65rem;color:var(--muted)">🏥 Pelayanan Tidak Perlu</div>
+        </div>
+        <div class="feat-item identitas" style="text-align:center;padding:1rem .8rem">
+          <div style="font-size:1.5rem;font-weight:700;color:#a855f7" id="m-rec-p4">—</div>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Recall P4</div>
+          <div style="font-size:.65rem;color:var(--muted)">🪪 Penyalahgunaan Identitas</div>
+        </div>
+        <div class="feat-item" style="text-align:center;padding:1rem .8rem">
+          <div style="font-size:1.5rem;font-weight:700;color:#6366f1" id="m-decoy-rate">—</div>
+          <div style="font-size:.72rem;color:var(--dim);margin-top:.25rem">Decoy ter-flag</div>
+          <div style="font-size:.65rem;color:var(--muted)">false positive rate</div>
+        </div>
+      </div>
+      <p style="font-size:.7rem;color:var(--muted);margin-top:.8rem">
+        ⓘ P4 recall 88.7% (bukan 100%) karena 30% kasus menggunakan hari berdekatan (bukan hari persis sama), sehingga geo_time_conflict=0 dan hanya ditangkap IsolationForest.
+        P2 recall 95% karena 40% kasus borderline qty 75-89 tablet. Ini merepresentasikan kondisi data nyata.
+      </p>
+    </div>
+
+    <!-- 7 Fitur -->
+    <div class="features-card">
+      <h3>7 Fitur Deteksi (Sesuai Proposal Healthkathon 2026)</h3>
+      <div class="features-grid">
+        <div class="feat-item obat">
+          <div class="feat-name">n_faskes_30d</div>
+          <div class="feat-sub">Faskes berbeda (obat sama) / 30 hari</div>
+          <div class="feat-cat">💊 Obat</div>
+        </div>
+        <div class="feat-item obat">
+          <div class="feat-name">qty_ratio</div>
+          <div class="feat-sub">Qty diterima ÷ kebutuhan terapi (30 hari)</div>
+          <div class="feat-cat">💊 Obat</div>
+        </div>
+        <div class="feat-item obat">
+          <div class="feat-name">gap_days</div>
+          <div class="feat-sub">Selisih hari antar penebusan ÷ hari terapi</div>
+          <div class="feat-cat">💊 Obat</div>
+        </div>
+        <div class="feat-item layanan">
+          <div class="feat-name">repeat_svc_60d</div>
+          <div class="feat-sub">Lab/rujukan sama berulang / 60 hari</div>
+          <div class="feat-cat">🏥 Layanan</div>
+        </div>
+        <div class="feat-item layanan">
+          <div class="feat-name">dx_norm_z</div>
+          <div class="feat-sub">Z-score layanan vs peer group</div>
+          <div class="feat-cat">🏥 Layanan</div>
+        </div>
+        <div class="feat-item identitas">
+          <div class="feat-name">geo_time_conflict</div>
+          <div class="feat-sub">2 provinsi berbeda dalam 1 hari</div>
+          <div class="feat-cat">🪪 Identitas</div>
+        </div>
+        <div class="feat-item identitas">
+          <div class="feat-name">use_vs_self</div>
+          <div class="feat-sub">Lonjakan vs median riwayat sendiri</div>
+          <div class="feat-cat">🪪 Identitas</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ SECTION: AI INVESTIGATOR ══════ -->
+  <section id="section-ai" class="section">
+    <div class="ai-layout">
+      <div class="ai-chat-panel">
+        <div class="ai-header">
+          <div class="ai-avatar">✨</div>
+          <div>
+            <div class="ai-name">Sentinel AI</div>
+            <div class="ai-desc">Powered by Gemini · Asisten investigasi fraud JKN</div>
+          </div>
+          <div class="ai-status-dot" id="ai-dot">●</div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-msg system">
+            <div class="msg-bubble">
+              Halo! Saya <strong>Sentinel AI</strong>, asisten investigasi fraud JKN.<br/><br/>
+              Saya dapat membantu menganalisis kasus, menjelaskan pola fraud (P1-P4), dan merekomendasikan langkah verifikasi konkret.<br/><br/>
+              <strong>Cara pakai:</strong><br/>
+              1. Buka <strong>⚙️ Pengaturan</strong> → masukkan <code>Gemini API Key</code><br/>
+              2. Dapatkan API Key gratis di <strong>aistudio.google.com</strong> → "Get API Key"<br/>
+              3. Klik salah satu saran di bawah, atau buka Detail kasus → "Kirim ke AI"
+            </div>
+          </div>
+        </div>
+
+        <div class="chat-suggestions">
+          <button class="sug-chip" onclick="sendSug(this)">Jelaskan pola drug shopping P1</button>
+          <button class="sug-chip" onclick="sendSug(this)">Apa itu geo_time_conflict?</button>
+          <button class="sug-chip" onclick="sendSug(this)">Bagaimana alur verifikasi P4?</button>
+          <button class="sug-chip" onclick="sendSug(this)">Ringkasan semua kasus terdeteksi</button>
+          <button class="sug-chip" onclick="sendSug(this)">Kenapa tidak pakai hard-stop/blokir?</button>
+        </div>
+
+        <div class="chat-input-row">
+          <textarea id="chat-input" placeholder="Tanya tentang kasus, fitur deteksi, atau minta analisis..." rows="1"
+            onkeydown="handleChatKey(event)" oninput="autoResize(this)"></textarea>
+          <button class="btn-send" id="btn-send" onclick="sendChat()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="ai-context-panel">
+        <h3>📌 Konteks Aktif</h3>
+        <div id="ai-context-box" class="context-box">
+          <p>Pilih kasus dari <strong>Kartu Kasus</strong> dan klik "Analisis AI" untuk kirim konteksnya ke AI.</p>
+        </div>
+        <div class="ctx-stats">
+          <div class="ctx-row"><span>Total Kasus</span><strong id="ctx-total">—</strong></div>
+          <div class="ctx-row"><span>Fraud (GT)</span><strong id="ctx-fraud">—</strong></div>
+          <div class="ctx-row"><span>Precision@100</span><strong id="ctx-prec">—</strong></div>
+          <div class="ctx-row"><span>Recall</span><strong id="ctx-rec">—</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ MODAL: SETTINGS ══════ -->
+<div class="modal-overlay" id="settings-modal" onclick="closeModalOut(event,'settings-modal')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2>⚙️ Pengaturan</h2>
+      <button onclick="toggleSettings()">✕</button>
+    </div>
+    <div class="modal-body">
+      <label>Google Gemini API Key</label>
+      <div class="api-input-row">
+        <input type="password" id="gemini-api-key" placeholder="AIza..." autocomplete="off"/>
+        <button class="btn-eye" onclick="toggleKey()">👁</button>
+      </div>
+      <p class="api-note">Gratis di <a href="https://aistudio.google.com" target="_blank">aistudio.google.com</a> · Tersimpan di localStorage browser</p>
+
+      <label style="margin-top:1.25rem">Path Data (relatif dari dashboard/)</label>
+      <input type="text" id="data-path" value="../" placeholder="../"/>
+      <p class="api-note">Folder tempat kartu_kasus.csv + results.json berada</p>
+
+      <label style="margin-top:1.25rem">Backend API URL (PHP/XAMPP)</label>
+      <input type="text" id="backend-url" value="../backend/api" placeholder="../backend/api"/>
+      <p class="api-note">Kosongkan atau ubah ke URL XAMPP Anda</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="toggleSettings()">Batal</button>
+      <button class="btn-save" onclick="saveSettings()">Simpan & Terapkan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL: DETAIL KASUS ══════ -->
+<div class="modal-overlay" id="case-modal" onclick="closeModalOut(event,'case-modal')">
+  <div class="modal-box wide">
+    <div class="modal-header">
+      <h2>🔍 Detail Kartu Kasus</h2>
+      <button onclick="closeCaseModal()">✕</button>
+    </div>
+    <div class="modal-body" id="case-modal-body"></div>
+    <div class="modal-footer">
+      <div class="modal-footer-left">
+        <button class="btn-flag" onclick="flagSalah()" title="Tandai kasus ini sah / bukan fraud">✅ Flag Salah (Bukan Fraud)</button>
+        <button class="btn-verify-fraud" onclick="confirmFraud()" title="Konfirmasi kasus ini sebagai fraud resmi">🚨 Konfirmasi Fraud</button>
+        <button class="btn-escalate" onclick="escalateCase()" title="Eskalasi ke Komite Audit / Manajemen">⬆️ Eskalasi Audit</button>
+      </div>
+      <button class="btn-cancel" onclick="closeCaseModal()">Tutup</button>
+      <button class="btn-save" onclick="sendCaseToAI()">✨ Analisis AI</button>
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
