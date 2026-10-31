@@ -84,7 +84,7 @@ $payload = json_encode([
         'temperature'     => 0.7,
         'topK'            => 40,
         'topP'            => 0.95,
-        'maxOutputTokens' => 1024,
+        'maxOutputTokens' => 8192,
     ],
 ], JSON_UNESCAPED_UNICODE);
 

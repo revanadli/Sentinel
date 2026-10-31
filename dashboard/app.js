@@ -678,7 +678,7 @@ async function sendChat() {
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${S.geminiKey}`,
         {method:'POST',headers:{'Content-Type':'application/json'},
          body:JSON.stringify({system_instruction:{parts:[{text:buildSysPrompt()}]},contents:S.chatHistory,
-           generationConfig:{temperature:.7,topK:40,topP:.95,maxOutputTokens:1024}})}
+           generationConfig:{temperature:.7,topK:40,topP:.95,maxOutputTokens:8192}})}
       );
       if (!r.ok){const e=await r.json();throw new Error(e.error?.message||`HTTP ${r.status}`);}
       const d = await r.json();
@@ -909,17 +909,24 @@ function pct2(v){return v!=null?v.toFixed(2)+'%':'—';}
 function fmtRp(n){if(n>=1e9)return(n/1e9).toFixed(1)+' M';if(n>=1e6)return(n/1e6).toFixed(1)+' jt';if(n>=1e3)return(n/1e3).toFixed(0)+' rb';return n?.toLocaleString('id-ID')||'0';}
 function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,110)+'px';}
-function md2html(md){
-  return md
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\*(.*?)\*/g,'<em>$1</em>')
-    .replace(/`([^`]+)`/g,'<code style="background:rgba(255,255,255,.08);padding:.1em .3em;border-radius:3px;font-size:.88em">$1</code>')
-    .replace(/^###\s(.+)/gm,'<h4 style="margin:.5rem 0 .2rem;font-size:.85rem;color:#818cf8">$1</h4>')
-    .replace(/^##\s(.+)/gm,'<h3 style="margin:.6rem 0 .3rem;font-size:.92rem">$1</h3>')
-    .replace(/^- (.+)/gm,'<li style="margin:.15rem 0">$1</li>')
-    .replace(/(<li.*<\/li>)/gs,'<ul style="padding-left:1.1rem;margin:.35rem 0">$1</ul>')
-    .replace(/\n\n/g,'</p><p style="margin:.4rem 0">')
-    .replace(/\n/g,'<br/>');
+function md2html(md) {
+  if (!md) return '';
+  let h = md
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+    .replace(/`([^`]+)`/g, '<code style="background:#f0f2f6;padding:.1em .35em;border-radius:4px;font-size:.85em;color:#4338ca">$1</code>')
+    .replace(/^###\s(.+)/gm, '<h4 style="margin:.75rem 0 .25rem;font-size:.85rem;font-weight:700;color:var(--accent)">$1</h4>')
+    .replace(/^##\s(.+)/gm, '<h3 style="margin:.85rem 0 .35rem;font-size:.92rem;font-weight:700;color:var(--text)">$1</h3>')
+    .replace(/^-\s(.+)/gm, '<li style="margin:.2rem 0;line-height:1.6">$1</li>')
+    .replace(/^\d+\.\s(.+)/gm, '<li style="margin:.2rem 0;line-height:1.6">$1</li>');
+
+  // Wrap consecutive <li> into <ul>
+  h = h.replace(/((?:<li[\s\S]*?<\/li>\s*)+)/g, '<ul style="padding-left:1.25rem;margin:.4rem 0">$1</ul>');
+  
+  // Convert double newlines to paragraph break, single newlines to br
+  h = h.replace(/\n\n/g, '<div style="margin:.5rem 0"></div>');
+  h = h.replace(/\n/g, '<br/>');
+  return h;
 }
 
 
