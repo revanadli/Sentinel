@@ -1,0 +1,245 @@
+================================================================================
+  KESIMPULAN PROYEK: JKN SENTINEL
+  Healthkathon 2026 — Deteksi Fraud Klaim JKN/BPJS Kesehatan
+  Tanggal analisis: 4 Oktober 2026
+================================================================================
+
+--------------------------------------------------------------------------------
+1. GAMBARAN UMUM PROYEK
+--------------------------------------------------------------------------------
+JKN Sentinel adalah sistem deteksi fraud klaim JKN berbasis Machine Learning
+yang dikembangkan untuk kompetisi Healthkathon 2026.
+
+Tim:
+  - Fayad   : Product Owner (mantan magang Infomedia)
+  - Nabil   : Fullstack Engineer (mantan magang BIGIO)
+  - Revan   : AI Engineer (program magang Komdigi/AITF)
+
+Konteks masalah:
+  - Potensi fraud yang berhasil dicegah, dideteksi, dan ditangani
+    Januari–Oktober 2025: Rp 6,8 T (estimasi potensi, bukan kerugian nyata)
+  - Rp 6 T: perkiraan lisan Dirut BPJS terkait kerugian fraud bidang kesehatan
+  - Rp 20 T: estimasi potensi (KPK), bukan kerugian yang sudah terbukti
+  - BPJS mengelola dana Rp 190 T untuk 286 juta peserta
+  - Deteksi saat ini mengikuti alur pencegahan dan penanganan yang diatur
+    Permenkes No. 16/2019
+
+PENTING: Prototype ini berjalan pada DATA SINTETIS, bukan data JKN riil.
+Data riil hanya bisa diakses dengan izin resmi dan MoU.
+
+--------------------------------------------------------------------------------
+2. CARA KERJA SISTEM (sentinel_prototype FIX.py)
+--------------------------------------------------------------------------------
+Script menghasilkan data sintetis 20.000 peserta, lalu mendeteksi fraud.
+
+A. DATA SINTETIS
+   - 20.000 peserta, 5 wilayah, 62 fasilitas kesehatan
+   - Simulasi selama 180 hari (resep + layanan)
+   - Total: 44.124 resep + 53.923 data layanan
+
+B. POLA FRAUD YANG DITANAM (540 kasus)
+   ┌────┬───────┬──────────────────────────────────────────────────────────────┐
+   │Tipe│ Jumlah│ Deskripsi                                                    │
+   ├────┼───────┼──────────────────────────────────────────────────────────────┤
+   │ P1 │  200  │ Drug shopping: ambil obat di banyak faskes sekaligus         │
+   │ P2 │  100  │ Qty berlebihan: tebus obat jauh melebihi kebutuhan terapi    │
+   │ P3 │  160  │ Duplikasi layanan: klaim jenis layanan sama di banyak faskes │
+   │ P4 │   80  │ Identity fraud: pelayanan di 2 wilayah jauh dalam 1 hari     │
+   └────┴───────┴──────────────────────────────────────────────────────────────┘
+   + 600 "decoy" (peserta sah tapi perilakunya mirip fraud, contoh: pasien kronis)
+
+C. FITUR DETEKSI (7 fitur)
+   1. n_faskes_30d      : Jumlah faskes unik yang dikunjungi dalam 30 hari
+   2. qty_ratio         : Rasio kuantitas obat vs kebutuhan terapi normal
+   3. repeat_svc_60d    : Layanan sejenis berulang dalam 60 hari
+   4. dx_norm_z         : Z-score jumlah klaim vs kelompok sejenis
+   5. geo_time_conflict : Klaim di 2 wilayah berjauhan dalam 1 hari
+   6. gap_days          : Selisih hari antar tebusan / durasi terapi
+   7. use_vs_self       : Lonjakan pemakaian vs riwayat peserta sendiri
+
+D. MODEL DETEKSI
+   Skor akhir = Rule Score (0–4) + Anomaly Score (IsolationForest, normalized)
+   - Rules: threshold sederhana per fitur (mudah diaudit, transparan)
+   - IsolationForest: 300 estimator, deteksi anomali unsupervised
+
+--------------------------------------------------------------------------------
+3. HASIL RUN SCRIPT (dijalankan 4 Oktober 2026)
+--------------------------------------------------------------------------------
+A. PERFORMA MODEL (Precision @ K, Recall @ K, Decoy %)
+
+   RULES saja:
+   ┌───┬──────────────┬──────────────┬────────────┐
+   │ K │ Precision@K  │  Recall@K    │  Decoy %   │
+   ├───┼──────────────┼──────────────┼────────────┤
+   │ 50│    100%      │    9.3%      │    0%      │
+   │100│     95%      │   17.6%      │    0.7%    │
+   │150│     92.7%    │   25.7%      │    1.7%    │
+   │300│     93%      │   51.7%      │    3.3%    │
+   │600│     51.3%    │   57%        │   10.7%    │
+   └───┴──────────────┴──────────────┴────────────┘
+
+   ISOLATION FOREST saja:
+   ┌───┬──────────────┬──────────────┬────────────┐
+   │ K │ Precision@K  │  Recall@K    │  Decoy %   │
+   ├───┼──────────────┼──────────────┼────────────┤
+   │ 50│    100%      │    9.3%      │    0%      │
+   │200│    100%      │   37%        │    0%      │
+   │300│     96.3%    │   53.5%      │    1.8%    │
+   │600│     76.5%    │   85%        │   23.2%    │
+   └───┴──────────────┴──────────────┴────────────┘
+
+   GABUNGAN (Rules + IsolationForest):
+   ┌───┬──────────────┬──────────────┬────────────┐
+   │ K │ Precision@K  │  Recall@K    │  Decoy %   │
+   ├───┼──────────────┼──────────────┼────────────┤
+   │ 50│    100%      │    9.3%      │    0%      │
+   │200│    100%      │   37%        │    0%      │
+   │300│     93%      │   51.7%      │    3.3%    │
+   │600│     79.5%    │   88.3%      │   20.3%    │
+   └───┴──────────────┴──────────────┴────────────┘
+
+B. RECALL PER TIPE FRAUD (sesudah normalisasi per kelompok)
+   - P1 (drug shopping)    : 100%   ✅ sangat baik
+   - P2 (qty berlebihan)   :  83%   ✅ baik
+   - P3 (duplikasi layanan): 100%   ✅ sangat baik
+   - P4 (identity fraud)   :  71.3% ⚠️  terendah (sebelum normalisasi: 31.2%)
+
+C. FAIRNESS / MITIGASI BIAS
+   ┌─────────────────────┬────────────┬────────────┐
+   │ Metrik              │  Sebelum   │  Sesudah   │
+   ├─────────────────────┼────────────┼────────────┤
+   │ Recall fraud        │   84.8%    │   92.6%    │
+   │ False flag kronis   │    2.26%   │    1.1%    │
+   │ False flag non-kronis│    0%     │    0%      │
+   │ Decoy ter-flag      │   13.5%    │    6.5%    │
+   └─────────────────────┴────────────┴────────────┘
+   Mitigasi: normalisasi skor anomali per kelompok (kronis x usia)
+   → Recall naik, false flag pasien kronis turun 51%, decoy turun 52%
+
+D. HARDSTOP (pemblokiran otomatis — saat ini tidak dipakai di produk)
+   - Kriteria: n_faskes_30d >= 2
+   - Peserta yang diblokir: 919 (dari 20.000)
+   - Precision hardstop: 22.3% (terlalu banyak salah blokir)
+   - Recall: 37.9%
+   - Decoy yang ikut diblokir: 93.2% (!) ← sangat berbahaya untuk pasien sah
+   KESIMPULAN: hardstop TIDAK digunakan; keputusan ada di tangan manusia
+
+E. SENSITIVITAS PREVALENSI
+   (Simulasi jika fraud di dunia nyata lebih sedikit dari 2.7%)
+   ┌──────────────┬──────────┬──────────────────────┐
+   │ Prevalensi   │  n_fraud │ Precision saat deteksi│
+   ├──────────────┼──────────┼──────────────────────┤
+   │    2.7%      │   540    │      93.5%            │
+   │    1.0%      │   196    │      85.7%            │
+   │    0.5%      │    97    │      71.1%            │
+   └──────────────┴──────────┴──────────────────────┘
+   Makin rendah prevalensi, precision turun — penting diukur di pilot nyata
+
+--------------------------------------------------------------------------------
+4. KARTU KASUS (kartu_kasus.csv)
+--------------------------------------------------------------------------------
+Output: 540 kartu kasus peserta terindikasi fraud
+Format: mengikuti Lampiran Bab IV Permenkes No. 16/2019
+
+Setiap kartu berisi:
+  - id_pseudonim      : Hash SHA-256 (salt + ID) — bagian arsitektur pseudonimisasi;
+                        mekanisme pembukaan identitas untuk verifikator belum diimplementasi
+  - jenis_dugaan      : Penyalahgunaan obat/alkes | Penyalahgunaan identitas |
+                        Pelayanan yang tidak perlu | Anomali umum
+  - waktu_kejadian    : Rentang hari kejadian (misal: "hari 69–89")
+  - tempat_kejadian   : Daftar kode faskes terlibat (misal: "F1;F37;F50;...")
+  - jumlah_kejadian   : Jumlah transaksi mencurigakan
+  - potensi_kerugian  : Estimasi hari terapi berlebih (Rp dihitung saat pilot)
+  - sumber_informasi  : Data sintetis resep & layanan
+  - alasan_flag       : Fitur dengan z-score tertinggi (maks 3 fitur)
+  - kronologi         : Urutan kejadian per faskes (misal: h69:resep@F53 > ...)
+  - skor              : Skor akhir deteksi (gabungan rules + anomali)
+  - label_sintetis    : 1 = fraud (ground truth data sintetis)
+
+Distribusi jenis dugaan dalam 540 kasus:
+  - Penyalahgunaan obat/alkes  : mayoritas (pola P1 & P2)
+  - Penyalahgunaan identitas   : pola P4 (lintas wilayah)
+  - Pelayanan yang tidak perlu : pola P3
+  - Anomali umum               : skor rendah, butuh telaah lebih lanjut
+
+--------------------------------------------------------------------------------
+5. INSIGHT DARI PPT (Proposal Healthkathon 2026)
+--------------------------------------------------------------------------------
+A. PRINSIP DESAIN PRODUK
+   - "Antrean kasus dengan alasan, BUKAN sekadar skor"
+   - Tidak ada blokir otomatis; semua keputusan ada di tangan manusia (reviewer)
+   - Anomali dibingkai "perlu verifikasi", bukan "terbukti curang"
+   - Compliance: UU PDP No. 27/2022, Permenkes No. 16/2019
+
+B. RENCANA PENGEMBANGAN (4 Fase)
+   Fase 1 (Bln 1-2)  : Prototype — alert obat, dashboard web, pipeline sintetis
+   Fase 2 (Bln 3-4)  : Perluasan — pola lab/rujukan dan anomali identitas
+   Fase 3 (Bln 5-8)  : Pilot — 1 faskes mitra (butuh MoU + izin data + etik)
+   Fase 4 (Bln 9-12) : Integrasi sistem BPJS, audit keamanan, SOP human review
+
+C. MODEL BISNIS
+   - Tahap 1 (pilot): gratis — tujuan validasi dan izin data
+   - Tahap 2: kerja sama riset → pengadaan; harga dari ROI terukur di pilot
+   - Break-even: precision × kerugian/kasus ≥ biaya telaah/kasus
+   - Tidak membangun birokrasi baru; memanfaatkan tim pencegahan yang sudah ada
+
+D. NILAI PRODUK AKHIR (target setelah pilot)
+   - Precision@100 : 100% (sintetis)
+   - Recall@540    : 92.6% (sintetis)
+   - Waktu telaah  : diukur dalam menit per kasus (bukan jam)
+   - Penerima manfaat:
+     → Peserta JKN  : dana & stok obat terjaga, tidak diblokir otomatis
+     → Faskes       : alert terarah, bukan audit menyeluruh
+     → BPJS/Dinkes  : verifikator fokus kasus berisiko tinggi
+
+--------------------------------------------------------------------------------
+6. KELEMAHAN & RISIKO YANG PERLU DIPERHATIKAN
+--------------------------------------------------------------------------------
+1. P4 (identity fraud) recall 71.3% sesudah normalisasi — terendah dari 4 tipe.
+   Sebelum normalisasi: 31.2%. Perlu fitur tambahan untuk meningkatkan lebih jauh.
+
+2. Hardstop sangat berbahaya jika diaktifkan:
+   - 93.2% dari 600 decoy (pasien sah) ikut terblokir
+   - 714 peserta sah bisa terblokir dari 919 total yang diblokir
+
+3. Prevalensi nyata mungkin < 2.7% → precision bisa turun ke 71%
+   Perlu kalibrasi threshold saat pilot dengan data riil
+
+4. Belum ada data riil → semua angka performa bersifat estimasi sintetis
+
+5. Bias pasien kronis sudah dimitigasi (2.26% → 1.1%) tapi belum nol
+
+6. Masih belum ada antarmuka web (disebutkan "mockup fiktif" di slide 14)
+
+7. [KODE — BELUM SELESAI] SALT pseudonimisasi masih bernilai 'ganti-di-produksi'.
+   Belum ada mekanisme untuk membuka identitas bagi verifikator berwenang.
+   Di deck, pseudonimisasi hanya ditulis sebagai bagian arsitektur,
+   bukan sebagai klaim "aman" atau "sesuai UU PDP".
+
+--------------------------------------------------------------------------------
+7. KESIMPULAN AKHIR
+--------------------------------------------------------------------------------
+JKN Sentinel adalah prototype yang solid secara teknis:
+  ✅ Arsitektur rules + ML yang transparan dan bisa diaudit
+  ✅ Fairness mitigation yang terukur (per kelompok kronis × usia)
+  ✅ Output kartu kasus mengikuti format Lampiran Bab IV Permenkes No. 16/2019
+  ✅ Pseudonimisasi SHA-256 sebagai bagian arsitektur (mekanisme buka-identitas
+     untuk verifikator belum diimplementasi — lihat poin 7 di atas)
+  ✅ Tidak ada blokir otomatis — human-in-the-loop
+  ✅ Precision@100 = 100%, Recall@540 = 92.6% pada data sintetis
+
+Yang masih perlu dikerjakan:
+  ⚠️  Pilot dengan data JKN riil (perlu MoU + izin etik)
+  ⚠️  Dashboard web (masih mockup)
+  ⚠️  P4 recall 71.3% — terendah, perlu fitur/pendekatan tambahan
+  ⚠️  Kalibrasi threshold pada prevalensi fraud yang lebih rendah
+  ⚠️  SOP human review yang formal
+  ⚠️  [KODE] Ganti SALT dari placeholder; bangun mekanisme buka-identitas
+      terotorisasi untuk verifikator
+
+================================================================================
+File ini dibuat secara otomatis berdasarkan analisis:
+  - sentinel_prototype FIX.py (dijalankan ulang 4 Oktober 2026)
+  - kartu_kasus.csv (540 baris output)
+  - Proposal_Healthkathon_2026_JKN_Sentinel_FIX.pptx (20 slide)
+================================================================================
