@@ -16,7 +16,10 @@ CREATE TABLE IF NOT EXISTS kartu_kasus (
   id               INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   id_pseudonim     VARCHAR(64)  NOT NULL UNIQUE COMMENT 'SHA-256 + salt, 16 hex char',
   jenis_dugaan     VARCHAR(120) NOT NULL,
-  tipe_fraud       CHAR(2)      NOT NULL DEFAULT '' COMMENT 'P1/P2/P3/P4 atau kosong',
+  peringkat        INT UNSIGNED NOT NULL DEFAULT 0,
+  prioritas        VARCHAR(10)  NOT NULL DEFAULT 'Sedang' COMMENT 'Segera/Tinggi/Sedang',
+  pola_terdeteksi  VARCHAR(2)   NOT NULL DEFAULT '' COMMENT 'P1/P2/P3/P4/AN — dari rule yang menyala',
+  tipe_fraud       CHAR(2)      NOT NULL DEFAULT '' COMMENT 'Ground truth sintetis (hanya demo)',
   waktu_kejadian   VARCHAR(30)  NOT NULL,
   provinsi_terlibat VARCHAR(100),
   faskes_terlibat  TEXT,
@@ -25,9 +28,17 @@ CREATE TABLE IF NOT EXISTS kartu_kasus (
   tgl_terima_obat  VARCHAR(200) COMMENT 'FKL04 — tanggal pulang kunjungan FKRTL',
   jumlah_kunjungan SMALLINT UNSIGNED DEFAULT 0,
   total_biaya_tagih BIGINT UNSIGNED DEFAULT 0 COMMENT 'FKL47 dalam rupiah',
+  potensi_kerugian  BIGINT UNSIGNED DEFAULT 0 COMMENT 'Estimasi, bukan kerugian terbukti',
+  n_faskes_30d      DECIMAL(8,3) DEFAULT 0,
+  qty_ratio         DECIMAL(8,3) DEFAULT 0,
+  gap_days          DECIMAL(8,3) DEFAULT 0,
+  repeat_svc_60d    DECIMAL(8,3) DEFAULT 0,
+  dx_norm_z         DECIMAL(8,3) DEFAULT 0,
+  geo_time_conflict DECIMAL(8,3) DEFAULT 0,
+  use_vs_self       DECIMAL(8,3) DEFAULT 0,
   skor             DECIMAL(8,4) DEFAULT 0 COMMENT 'Skor fairness-adjusted',
   label_sintetis   TINYINT(1)   DEFAULT 0 COMMENT '1=fraud (ground truth sintetis)',
-  tipe_fraud_full  VARCHAR(10),
+
   alasan_flag      VARCHAR(500) COMMENT 'Penjelasan rule yang terpicu per kasus',
   role_target      ENUM('Apoteker','Dokter','Verifikator') DEFAULT 'Verifikator',
   -- Status investigasi (diisi oleh verifikator manusia)
@@ -37,7 +48,7 @@ CREATE TABLE IF NOT EXISTS kartu_kasus (
   diverifikasi_oleh VARCHAR(80),
   diverifikasi_at  DATETIME,
   imported_at      DATETIME DEFAULT CURRENT_TIMESTAMP,
-  INDEX idx_tipe   (tipe_fraud),
+  INDEX idx_tipe   (pola_terdeteksi),
   INDEX idx_skor   (skor DESC),
   INDEX idx_status (status),
   INDEX idx_label  (label_sintetis)
@@ -90,8 +101,7 @@ CREATE TABLE IF NOT EXISTS settings (
 
 -- Default settings
 INSERT IGNORE INTO settings (`key`, `value`) VALUES
-  ('threshold_skor',    '1.5'),
-  ('top_k_review',      '100'),
+
   ('gemini_model',      'gemini-3.5-flash'),
   ('app_version',       '1.0.0-healthkathon2026');
 
